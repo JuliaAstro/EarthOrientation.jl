@@ -4,6 +4,13 @@ import Base.Dates: datetime2julian, julian2datetime, Date, today, days
 
 export EOPData, interpolate
 
+function __init__()
+    !isdir(PATH) && update()
+    if isold(FILES[1])
+        warn("Outdated EOP data. Please call 'EarthOrientation.update()'.")
+    end
+end
+
 const PATH = abspath(dirname(@__FILE__), "..", "data")
 
 const NAMES = ("IAU1980", "IAU2000")
