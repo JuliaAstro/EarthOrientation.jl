@@ -1,5 +1,7 @@
 module EarthOrientation
 
+export EOPData
+
 const PATH = abspath(dirname(@__FILE__), "..", "data")
 
 const NAMES = ("IAU1980", "IAU2000")
@@ -51,24 +53,35 @@ type EOPData
     δx_err::Vector{Nullable{Float64}}
     δy::Vector{Nullable{Float64}}
     δy_err::Vector{Nullable{Float64}}
+    EOPData(date, mjd) = new(date, mjd)
 end
 
-function EOPData(iau1980, iau2000)
+function EOPData(iau1980::String, iau2000::String)
     data80, header80 = readdlm(iau1980, ';', header=true)
     data00, header00 = readdlm(iau1980, ';', header=true)
+    n = size(data80, 1)
     date = getdate(data80)
     mjd = Vector{Float64}(data80[:,1])
-    ind1 = (6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 18, 19)
-    ind2 = (20, 21, 22, 23)
-    for (sym, idx) in zip(fieldnames(EOPData)[2:end], ind1)
-        @eval $sym = [el == "" ? Nullable{Float64}() : Nullable(el) for el in $data80[:,$idx]]
+    eop = EOPData(date, mjd)
+    for field in fieldnames(EOPData)[3:end]
+        setfield!(eop, field, Array(Nullable{Float64}, n))
     end
-    for (sym, idx) in zip(fieldnames(EOPData)[end-3:end], ind2)
-        @eval $sym = [el == "" ? Nullable{Float64}() : Nullable(el) for el in $data00[:,$idx]]
+    ind1 = [collect(6:9); collect(11:14); collect(16:19)]
+    ind2 = collect(20:23)
+    for i = 1:n
+        row = view(data80, n, :)
+        for (field, idx) in zip(fieldnames(EOPData)[3:end], ind1)
+            getfield(eop, field)[i] = row[idx] == "" ? Nullable{Float64}() : Nullable(row[idx])
+        end
+        row = view(data00, n, :)
+        for (field, idx) in zip(fieldnames(EOPData)[end-3:end], ind2)
+            getfield(eop, field)[i] = row[idx] == "" ? Nullable{Float64}() : Nullable(row[idx])
+        end
     end
-    EOPData(date, mjd, xp, xp_err, yp, yp_err, ΔUT1, ΔUT1_err, lod, lod_err,
-            δψ, δψ_err, δϵ, δϵ_err, δx, δx_err, δy, δy_err)
+    return eop
 end
 EOPData() = EOPData(FILES...)
+
+Base.show(io::IO, eop::EOPData) = print(io, "EOPData($(eop.date))")
 
 end # module
