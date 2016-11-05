@@ -1,7 +1,62 @@
-# EarthOrientation
+# EarthOrientation.jl
 
-[![Build Status](https://travis-ci.org/helgee/EarthOrientation.jl.svg?branch=master)](https://travis-ci.org/helgee/EarthOrientation.jl)
+*Acquire and interpolate IERS Earth orientation parameters in Julia.*
 
-[![Coverage Status](https://coveralls.io/repos/helgee/EarthOrientation.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/helgee/EarthOrientation.jl?branch=master)
+[![Build Status Unix][travis-image]][travis-link] [![Build Status Windows][av-image]][av-link] [![Coverage][codecov-image]][codecov-link]
 
-[![codecov.io](http://codecov.io/github/helgee/EarthOrientation.jl/coverage.svg?branch=master)](http://codecov.io/github/helgee/EarthOrientation.jl?branch=master)
+## Installation
+
+The package can be installed through Julia's package manager:
+
+```julia
+Pkg.clone("https://github.com/helgee/EarthOrientation.jl.git")
+# As soon as the package has been published in METADATA.jl use:
+# Pkg.add("EarthOrientation")
+```
+
+## Quickstart
+
+Fetch the latest [IERS][iers-link] tables:
+
+```julia
+using EarthOrientation
+EarthOrientation.update()
+```
+
+Parse the data files into an `EOPData` object:
+
+```julia
+eop = EOPData()
+```
+
+By default the files downloaded by `EarthOrientation.update()` will be used. It is also possible to pass
+different [finals.all][finals-link] and [finals2000A.all][2000A-link] files in CSV format.
+
+```julia
+eop = EOPData("finals.csv", "finals2000A.csv")
+```
+
+Get the current Earth orientation parameters, e.g. for polar motion:
+
+```julia
+xp, yp = polarmotion(eop, now()) # arcseconds
+```
+
+Or the current difference between UT1 and UTC and the associated prediction error:
+
+```julia
+ΔUT1 = getΔUT1(eop, now()) # seconds
+ΔUT1_err = getΔUT1_err(eop, now()) # milliseconds
+```
+
+## Documentation
+
+[travis-image]: https://travis-ci.org/helgee/EarthOrientation.jl.svg?branch=master
+[travis-link]: https://travis-ci.org/helgee/EarthOrientation.jl
+[av-image]: https://ci.appveyor.com/api/projects/status/y66wet5aa819vxwu?svg=true
+[av-link]: https://ci.appveyor.com/project/helgee/earthorientation-jl
+[codecov-image]: http://codecov.io/github/helgee/EarthOrientation.jl/coverage.svg?branch=master
+[codecov-link]: http://codecov.io/github/helgee/EarthOrientation.jl?branch=master
+[iers-link]: https://www.iers.org/IERS/EN/DataProducts/EarthOrientationData/eop.html
+[finals-link]: https://datacenter.iers.org/eop/-/somos/5Rgv/getMeta/7/finals.all
+[2000A-link]: https://datacenter.iers.org/eop/-/somos/5Rgv/getMeta/9/finals2000A.all
