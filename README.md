@@ -46,7 +46,7 @@ Or the current difference between UT1 and UTC and the associated prediction erro
 
 ```julia
 ΔUT1 = getΔUT1(eop, now()) # seconds
-ΔUT1_err = getΔUT1_err(eop, now()) # milliseconds
+ΔUT1_err = getΔUT1_err(eop, now()) # seconds
 ```
 
 ## Documentation
