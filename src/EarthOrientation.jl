@@ -1,6 +1,7 @@
 module EarthOrientation
 
 import Base.Dates: datetime2julian, julian2datetime, Date, today, days
+using SmoothingSplines
 
 export EOPData, interpolate
 
@@ -26,8 +27,15 @@ type OutOfRangeError <: Base.Exception
     when::String
 end
 Base.showerror(io::IO, e::OutOfRangeError) = print(io, "No data available ", when, " ", date(mjd))
-warn_extrapolation(mjd, when) = warn("No data available $when $(date(mjd)). Extrapolation is probably imprecise.")
+warn_extrapolation(mjd, when) = warn("No data available $when $(date(mjd)).
+                                     Extrapolation is probably imprecise.")
 
+"""
+    update()
+
+Download weekly EOP data from the IERS servers if newer files are available or
+no data has been downloaded previously.
+"""
 function update()
     !isdir(PATH) && mkdir(PATH)
     dt = now()
@@ -41,11 +49,21 @@ function update()
     nothing
 end
 
+"""
+    getdate(data)
+
+Determine the creation date of an IERS table by finding the last which is marked as "final".
+"""
 function getdate(data)
     idx = findlast(data[:,5] .== "final")
     Date(data[idx,2], data[idx,3], data[idx,4])
 end
 
+"""
+    isold(file)
+
+Check whether new EOP data should be available, i.e. if the CSV file `file` is older than a week.
+"""
 function isold(file)
     data, header = readdlm(file, ';', header=true)
     timestamp = getdate(data)
@@ -53,48 +71,79 @@ function isold(file)
 end
 
 type EOPData
+    "Creation date of the contained IERS tables."
     date::Date
+    "All modified Julian dates covered by this table."
     mjd::Vector{Float64}
-    xp::Vector{Nullable{Float64}}
-    xp_err::Vector{Nullable{Float64}}
-    yp::Vector{Nullable{Float64}}
-    yp_err::Vector{Nullable{Float64}}
-    ΔUT1::Vector{Nullable{Float64}}
-    ΔUT1_err::Vector{Nullable{Float64}}
-    lod::Vector{Nullable{Float64}}
-    lod_err::Vector{Nullable{Float64}}
-    δψ::Vector{Nullable{Float64}}
-    δψ_err::Vector{Nullable{Float64}}
-    δϵ::Vector{Nullable{Float64}}
-    δϵ_err::Vector{Nullable{Float64}}
-    δx::Vector{Nullable{Float64}}
-    δx_err::Vector{Nullable{Float64}}
-    δy::Vector{Nullable{Float64}}
-    δy_err::Vector{Nullable{Float64}}
-    EOPData(date, mjd) = new(date, mjd)
+    "Contains the last available data point for every table."
+    lastdate::Dict{Symbol, Float64}
+    "North pole x-coordinate."
+    xp::SmoothingSpline{Float64}
+    "Error in North pole x-coordinate."
+    xp_err::SmoothingSpline{Float64}
+    "North pole y-coordinate."
+    yp::SmoothingSpline{Float64}
+    "Error in North pole y-coordinate."
+    yp_err::SmoothingSpline{Float64}
+    "Difference between UT1 and UTC."
+    ΔUT1::SmoothingSpline{Float64}
+    "Error in difference between UT1 and UTC."
+    ΔUT1_err::SmoothingSpline{Float64}
+    "Excess length of day."
+    lod::SmoothingSpline{Float64}
+    "Error in excess length of day."
+    lod_err::SmoothingSpline{Float64}
+    "Ecliptic nutation correction."
+    δψ::SmoothingSpline{Float64}
+    "Error in ecliptic nutation correction."
+    δψ_err::SmoothingSpline{Float64}
+    "Ecliptic obliquity correction"
+    δϵ::SmoothingSpline{Float64}
+    "Error in ecliptic obliquity correction"
+    δϵ_err::SmoothingSpline{Float64}
+    "Celestial pole x-coordinate correction."
+    δx::SmoothingSpline{Float64}
+    "Error in celestial pole x-coordinate correction."
+    δx_err::SmoothingSpline{Float64}
+    "Celestial pole y-coordinate correction."
+    δy::SmoothingSpline{Float64}
+    "Error in celestial pole y-coordinate correction."
+    δy_err::SmoothingSpline{Float64}
+
+    EOPData(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
 end
+
+columns = Dict(
+    :xp => 6,
+    :xp_err => 7,
+    :yp => 8,
+    :yp_err => 9,
+    :ΔUT1 => 11,
+    :ΔUT1_err => 12,
+    :lod => 13,
+    :lod_err => 14,
+    :δψ => 16,
+    :δψ_err => 17,
+    :δϵ => 18,
+    :δϵ_err => 19,
+    :δx => 20,
+    :δx_err => 21,
+    :δy => 22,
+    :δy_err => 23,
+)
 
 function EOPData(iau1980::String, iau2000::String)
     data80, header80 = readdlm(iau1980, ';', header=true)
     data00, header00 = readdlm(iau2000, ';', header=true)
-    n = size(data80, 1)
     date = getdate(data80)
     mjd = Vector{Float64}(data80[:,1])
     eop = EOPData(date, mjd)
-    for field in fieldnames(EOPData)[3:end]
-        setfield!(eop, field, Array(Nullable{Float64}, n))
-    end
-    ind1 = [collect(6:9); collect(11:14); collect(16:19)]
-    ind2 = collect(20:23)
-    for i = 1:n
-        row = view(data80, i, :)
-        for (field, idx) in zip(fieldnames(EOPData)[3:end], ind1)
-            getfield(eop, field)[i] = row[idx] == "" ? Nullable{Float64}() : Nullable(row[idx])
-        end
-        row = view(data00, i, :)
-        for (field, idx) in zip(fieldnames(EOPData)[end-3:end], ind2)
-            getfield(eop, field)[i] = row[idx] == "" ? Nullable{Float64}() : Nullable(row[idx])
-        end
+    for field in fieldnames(EOPData)[4:end]
+        col = columns[field]
+        data = col < 20 ? data80 : data00
+        row = findlast(data[:,col] .!= "")
+        merge!(eop.lastdate, Dict(field => mjd[row]))
+        setfield!(eop, field, fit(SmoothingSpline, mjd[1:row], Vector{Float64}(data[1:row,col]), 0.0))
     end
     return eop
 end
@@ -103,50 +152,27 @@ EOPData() = EOPData(FILES...)
 Base.show(io::IO, eop::EOPData) = print(io, "EOPData($(eop.date))")
 
 function interpolate(eop::EOPData, field::Symbol, jd::Float64; extrapolate=true, warnings=true)
-    interpolate(eop.mjd, getfield(eop, field), jd - MJD_EPOCH,
-                extrapolate=extrapolate, warnings=warnings)
+    mjd = jd - MJD_EPOCH
+    before = mjd < eop.mjd[1]
+    after = mjd > eop.lastdate[field]
+    if after || before
+        when = after ? "after" : "before"
+        lim = after ? eop.lastdate[field] : eop.mjd[1]
+        if !extrapolate
+            throw(OutOfRangeError(lim, when))
+        elseif warnings
+            warn_extrapolation(lim, when)
+        end
+    end
+
+    predict(getfield(eop, field), mjd)
 end
 
 function interpolate(eop::EOPData, field::Symbol, dt::DateTime; kwargs...)
     interpolate(eop, field, datetime2julian(dt); kwargs...)
 end
 
-function interpolate(xv, yv, x; extrapolate=true, warnings=true)
-    idx = findfirst(map(y->isapprox(x, y), xv))
-    if idx != 0 && !isnull(yv[idx])
-        return get(yv[idx])
-    end
-    idx = findfirst(x .< xv)
-    if idx == 0
-        if extrapolate
-            warnings && warn_extrapolation(xv[end], "after")
-            idx = length(xv)
-        else
-            throw(OutOfRangeError(x, "after"))
-        end
-    elseif idx == 1
-        if extrapolate
-            warnings && warn_extrapolation(xv[1], "before")
-            idx = 2
-        else
-            throw(OutOfRangeError(x, "before"))
-        end
-    end
-    if isnull(yv[idx])
-        if extrapolate
-            idx = findlast(!isnull.(yv))
-            warnings && warn_extrapolation(xv[idx], "after")
-        else
-            throw(OutOfRangeError(x, "after"))
-        end
-    end
-    x0 = xv[idx-1]
-    y1 = get(yv[idx])
-    y0 = get(yv[idx-1])
-    y = y0 + (y1 - y0) * (x - x0)
-end
-
-for sym in fieldnames(EOPData)[3:end]
+for sym in fieldnames(EOPData)[4:end]
     fun = Symbol(:get, sym)
     s = Expr(:quote, sym)
     @eval begin
