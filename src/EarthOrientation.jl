@@ -18,7 +18,7 @@ end
 
 const PATH = abspath(dirname(@__FILE__), "..", "data")
 
-const NAMES = ("IAU1980", "IAU2000")
+const NAMES = ("IAU 1980", "IAU 2000")
 const FILES = (joinpath(PATH, "finals.csv"), joinpath(PATH, "finals2000A.csv"))
 const URLS = ("https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
               "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/9/finals2000A.all/csv")
@@ -47,6 +47,8 @@ function update()
         if needsupdate
             info("Updating $name EOP data.")
             download(url, file)
+        else
+            info("$name EOP data is up-to-date.")
         end
     end
     nothing
