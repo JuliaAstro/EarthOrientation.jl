@@ -51,7 +51,8 @@ Or the current difference between UT1 and UTC and the associated prediction erro
 
 ## Documentation
 
-Please refer to the [documentation](https://helgee.github.io/EarthOrientation.jl) for additional information.
+Please refer to the [documentation](https://helgee.github.io/EarthOrientation.jl/latest) for additional
+information.
 
 [travis-image]: https://travis-ci.org/helgee/EarthOrientation.jl.svg?branch=master
 [travis-link]: https://travis-ci.org/helgee/EarthOrientation.jl
