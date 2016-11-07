@@ -3,7 +3,11 @@ module EarthOrientation
 import Base.Dates: datetime2julian, julian2datetime, Date, today, days
 using SmoothingSplines
 
-export EOPData, interpolate
+export EOParameters, interpolate
+export polarmotion, getxp, getxp_err, getyp, getyp_err
+export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
+export precession_nutation00, getdx, getdx_err, getdy, getdy_err
+export getΔUT1, getΔUT1_err, getlod, getlod_err
 
 function __init__()
     !isdir(PATH) && update()
@@ -52,7 +56,7 @@ end
 """
     getdate(data)
 
-Determine the creation date of an IERS table by finding the last which is marked as "final".
+Determine the creation date of an IERS table by finding the last entry which is marked as "final".
 """
 function getdate(data)
     idx = findlast(data[:,5] .== "final")
@@ -62,7 +66,7 @@ end
 """
     isold(file)
 
-Check whether new EOP data should be available, i.e. if the CSV file `file` is older than a week.
+Check whether new EOP data should be available, i.e. if the CSV `file` is older than a week.
 """
 function isold(file)
     data, header = readdlm(file, ';', header=true)
@@ -70,7 +74,8 @@ function isold(file)
     days(today() - timestamp) > 7
 end
 
-type EOPData
+"Contains Earth orientation parameters since 1973-01-01 until "
+type EOParameters
     "Creation date of the contained IERS tables."
     date::Date
     "All modified Julian dates covered by this table."
@@ -94,23 +99,23 @@ type EOPData
     "Error in excess length of day."
     lod_err::SmoothingSpline{Float64}
     "Ecliptic nutation correction."
-    δψ::SmoothingSpline{Float64}
+    dψ::SmoothingSpline{Float64}
     "Error in ecliptic nutation correction."
-    δψ_err::SmoothingSpline{Float64}
+    dψ_err::SmoothingSpline{Float64}
     "Ecliptic obliquity correction"
-    δϵ::SmoothingSpline{Float64}
+    dϵ::SmoothingSpline{Float64}
     "Error in ecliptic obliquity correction"
-    δϵ_err::SmoothingSpline{Float64}
+    dϵ_err::SmoothingSpline{Float64}
     "Celestial pole x-coordinate correction."
-    δx::SmoothingSpline{Float64}
+    dx::SmoothingSpline{Float64}
     "Error in celestial pole x-coordinate correction."
-    δx_err::SmoothingSpline{Float64}
+    dx_err::SmoothingSpline{Float64}
     "Celestial pole y-coordinate correction."
-    δy::SmoothingSpline{Float64}
+    dy::SmoothingSpline{Float64}
     "Error in celestial pole y-coordinate correction."
-    δy_err::SmoothingSpline{Float64}
+    dy_err::SmoothingSpline{Float64}
 
-    EOPData(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
+    EOParameters(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
 end
 
 columns = Dict(
@@ -122,23 +127,23 @@ columns = Dict(
     :ΔUT1_err => 12,
     :lod => 13,
     :lod_err => 14,
-    :δψ => 16,
-    :δψ_err => 17,
-    :δϵ => 18,
-    :δϵ_err => 19,
-    :δx => 20,
-    :δx_err => 21,
-    :δy => 22,
-    :δy_err => 23,
+    :dψ => 16,
+    :dψ_err => 17,
+    :dϵ => 18,
+    :dϵ_err => 19,
+    :dx => 20,
+    :dx_err => 21,
+    :dy => 22,
+    :dy_err => 23,
 )
 
-function EOPData(iau1980::String, iau2000::String)
+function EOParameters(iau1980::String, iau2000::String)
     data80, header80 = readdlm(iau1980, ';', header=true)
     data00, header00 = readdlm(iau2000, ';', header=true)
     date = getdate(data80)
     mjd = Vector{Float64}(data80[:,1])
-    eop = EOPData(date, mjd)
-    for field in fieldnames(EOPData)[4:end]
+    eop = EOParameters(date, mjd)
+    for field in fieldnames(EOParameters)[4:end]
         col = columns[field]
         data = col < 20 ? data80 : data00
         row = findlast(data[:,col] .!= "")
@@ -147,11 +152,11 @@ function EOPData(iau1980::String, iau2000::String)
     end
     return eop
 end
-EOPData() = EOPData(FILES...)
+EOParameters() = EOParameters(FILES...)
 
-Base.show(io::IO, eop::EOPData) = print(io, "EOPData($(eop.date))")
+Base.show(io::IO, eop::EOParameters) = print(io, "EOParameters($(eop.date))")
 
-function interpolate(eop::EOPData, field::Symbol, jd::Float64; extrapolate=true, warnings=true)
+function interpolate(eop::EOParameters, field::Symbol, jd::Float64; extrapolate=true, warnings=true)
     mjd = jd - MJD_EPOCH
     before = mjd < eop.mjd[1]
     after = mjd > eop.lastdate[field]
@@ -168,22 +173,31 @@ function interpolate(eop::EOPData, field::Symbol, jd::Float64; extrapolate=true,
     predict(getfield(eop, field), mjd)
 end
 
-function interpolate(eop::EOPData, field::Symbol, dt::DateTime; kwargs...)
-    interpolate(eop, field, datetime2julian(dt); kwargs...)
+function interpolate(eop::EOParameters, field::Symbol, dt::DateTime; args...)
+    interpolate(eop, field, datetime2julian(dt); args...)
 end
 
-for sym in fieldnames(EOPData)[4:end]
-    fun = Symbol(:get, sym)
-    s = Expr(:quote, sym)
-    @eval begin
-        function $fun(eop::EOPData, dt::DateTime; kwargs...)
-            interpolate(eop, $s, datetime2julian(dt); kwargs...)
-        end
-        function $fun(eop::EOPData, jd::Float64; kwargs...)
-            interpolate(eop, $s, jd; kwargs...)
-        end
-        export $fun
-    end
-end
+getxp(eop, dt; args...) = interpolate(eop, :xp, dt; args...)
+getxp_err(eop, dt; args...) = interpolate(eop, :xp_err, dt; args...)
+getyp(eop, dt; args...) = interpolate(eop, :yp, dt; args...)
+getyp_err(eop, dt; args...) = interpolate(eop, :yp_err, dt; args...)
+polarmotion(eop, dt; args...) = (getxp(eop, dt; args...), getyp(eop, dt; args...))
+
+getΔUT1(eop, dt; args...) = interpolate(eop, :ΔUT1, dt; args...)
+getΔUT1_err(eop, dt; args...) = interpolate(eop, :ΔUT1_err, dt; args...)
+getlod(eop, dt; args...) = interpolate(eop, :lod, dt; args...)
+getlod_err(eop, dt; args...) = interpolate(eop, :lod_err, dt; args...)
+
+getdψ(eop, dt; args...) = interpolate(eop, :dψ, dt; args...)
+getdψ_err(eop, dt; args...) = interpolate(eop, :dψ_err, dt; args...)
+getdϵ(eop, dt; args...) = interpolate(eop, :dϵ, dt; args...)
+getdϵ_err(eop, dt; args...) = interpolate(eop, :dϵ_err, dt; args...)
+precession_nutation80(eop, dt; args...) = (getdψ(eop, dt; args...), getdϵ(eop, dt; args...))
+
+getdx(eop, dt; args...) = interpolate(eop, :dx, dt; args...)
+getdx_err(eop, dt; args...) = interpolate(eop, :dx_err, dt; args...)
+getdy(eop, dt; args...) = interpolate(eop, :dy, dt; args...)
+getdy_err(eop, dt; args...) = interpolate(eop, :dy_err, dt; args...)
+precession_nutation00(eop, dt; args...) = (getdx(eop, dt; args...), getdy(eop, dt; args...))
 
 end # module
