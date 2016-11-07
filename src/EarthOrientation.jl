@@ -30,9 +30,8 @@ type OutOfRangeError <: Base.Exception
     mjd::Float64
     when::String
 end
-Base.showerror(io::IO, e::OutOfRangeError) = print(io, "No data available ", when, " ", date(mjd))
-warn_extrapolation(mjd, when) = warn("No data available $when $(date(mjd)).
-                                     Extrapolation is probably imprecise.")
+Base.showerror(io::IO, err::OutOfRangeError) = print(io, "No data available ", err.when, " ", date(err.mjd), ".")
+warn_extrapolation(mjd, when) = warn("No data available $when $(date(mjd)). Extrapolation is probably imprecise.")
 
 """
     update()
@@ -181,7 +180,7 @@ getxp(eop, dt; args...) = interpolate(eop, :xp, dt; args...)
 getxp_err(eop, dt; args...) = interpolate(eop, :xp_err, dt; args...)
 getyp(eop, dt; args...) = interpolate(eop, :yp, dt; args...)
 getyp_err(eop, dt; args...) = interpolate(eop, :yp_err, dt; args...)
-polarmotion(eop, dt; args...) = (getxp(eop, dt; args...), getyp(eop, dt; args...))
+polarmotion(eop, dt; args...) = (getxp(eop, dt; args...), getyp(eop, dt; warnings=false, args...))
 
 getΔUT1(eop, dt; args...) = interpolate(eop, :ΔUT1, dt; args...)
 getΔUT1_err(eop, dt; args...) = interpolate(eop, :ΔUT1_err, dt; args...)
@@ -192,12 +191,12 @@ getdψ(eop, dt; args...) = interpolate(eop, :dψ, dt; args...)
 getdψ_err(eop, dt; args...) = interpolate(eop, :dψ_err, dt; args...)
 getdϵ(eop, dt; args...) = interpolate(eop, :dϵ, dt; args...)
 getdϵ_err(eop, dt; args...) = interpolate(eop, :dϵ_err, dt; args...)
-precession_nutation80(eop, dt; args...) = (getdψ(eop, dt; args...), getdϵ(eop, dt; args...))
+precession_nutation80(eop, dt; args...) = (getdψ(eop, dt; args...), getdϵ(eop, dt; warnings=false, args...))
 
 getdx(eop, dt; args...) = interpolate(eop, :dx, dt; args...)
 getdx_err(eop, dt; args...) = interpolate(eop, :dx_err, dt; args...)
 getdy(eop, dt; args...) = interpolate(eop, :dy, dt; args...)
 getdy_err(eop, dt; args...) = interpolate(eop, :dy_err, dt; args...)
-precession_nutation00(eop, dt; args...) = (getdx(eop, dt; args...), getdy(eop, dt; args...))
+precession_nutation00(eop, dt; args...) = (getdx(eop, dt; args...), getdy(eop, dt; warnings=false, args...))
 
 end # module
