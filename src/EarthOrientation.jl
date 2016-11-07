@@ -24,14 +24,14 @@ const URLS = ("https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.al
               "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/9/finals2000A.all/csv")
 
 const MJD_EPOCH = 2400000.5
-date(mjd) = Date(julian2datetime(mjd + MJD_EPOCH))
+date_from_mjd(mjd) = Date(julian2datetime(mjd + MJD_EPOCH))
 
 type OutOfRangeError <: Base.Exception
     mjd::Float64
     when::String
 end
-Base.showerror(io::IO, err::OutOfRangeError) = print(io, "No data available ", err.when, " ", date(err.mjd), ".")
-warn_extrapolation(mjd, when) = warn("No data available $when $(date(mjd)). Extrapolation is probably imprecise.")
+Base.showerror(io::IO, err::OutOfRangeError) = print(io, "No data available ", err.when, " ", date_from_mjd(err.mjd), ".")
+warn_extrapolation(mjd, when) = warn("No data available $when $(date_from_mjd(mjd)). Extrapolation is probably imprecise.")
 
 """
     update()
@@ -178,27 +178,250 @@ function interpolate(eop::EOParameters, field::Symbol, dt::DateTime; args...)
     interpolate(eop, field, datetime2julian(dt); args...)
 end
 
-getxp(eop, dt; args...) = interpolate(eop, :xp, dt; args...)
-getxp_err(eop, dt; args...) = interpolate(eop, :xp_err, dt; args...)
-getyp(eop, dt; args...) = interpolate(eop, :yp, dt; args...)
-getyp_err(eop, dt; args...) = interpolate(eop, :yp_err, dt; args...)
-polarmotion(eop, dt; args...) = (getxp(eop, dt; args...), getyp(eop, dt; warnings=false, args...))
+################
+# Polar motion #
+################
 
-getΔUT1(eop, dt; args...) = interpolate(eop, :ΔUT1, dt; args...)
-getΔUT1_err(eop, dt; args...) = interpolate(eop, :ΔUT1_err, dt; args...)
-getlod(eop, dt; args...) = interpolate(eop, :lod, dt; args...)
-getlod_err(eop, dt; args...) = interpolate(eop, :lod_err, dt; args...)
+"""
+    getxp(eop::EOParameters, date; extrapolate=true, warnings=true)
 
-getdψ(eop, dt; args...) = interpolate(eop, :dψ, dt; args...)
-getdψ_err(eop, dt; args...) = interpolate(eop, :dψ_err, dt; args...)
-getdϵ(eop, dt; args...) = interpolate(eop, :dϵ, dt; args...)
-getdϵ_err(eop, dt; args...) = interpolate(eop, :dϵ_err, dt; args...)
-precession_nutation80(eop, dt; args...) = (getdψ(eop, dt; args...), getdϵ(eop, dt; warnings=false, args...))
+Get the x-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
-getdx(eop, dt; args...) = interpolate(eop, :dx, dt; args...)
-getdx_err(eop, dt; args...) = interpolate(eop, :dx_err, dt; args...)
-getdy(eop, dt; args...) = interpolate(eop, :dy, dt; args...)
-getdy_err(eop, dt; args...) = interpolate(eop, :dy_err, dt; args...)
-precession_nutation00(eop, dt; args...) = (getdx(eop, dt; args...), getdy(eop, dt; warnings=false, args...))
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getxp(eop, date; args...) = interpolate(eop, :xp, date; args...)
+
+"""
+    getxp_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error for the x-coordinate of Earth's north pole w.r.t. the CIO
+for a certain `date` in arcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getxp_err(eop, date; args...) = interpolate(eop, :xp_err, date; args...)
+
+"""
+    getyp(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the y-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getyp(eop, date; args...) = interpolate(eop, :yp, date; args...)
+
+"""
+    getyp_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error for the y-coordinate of Earth's north pole w.r.t. the CIO
+for a certain `date` in arcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getyp_err(eop, date; args...) = interpolate(eop, :yp_err, date; args...)
+
+"""
+    polarmotion(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the coordinates of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+polarmotion(eop, date; args...) = (getxp(eop, date; args...), getyp(eop, date; warnings=false, args...))
+
+################
+# ΔUT1 and LOD #
+################
+
+"""
+    getΔUT1(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the difference between UTC and UT1 for a certain `date` in seconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getΔUT1(eop, date; args...) = interpolate(eop, :ΔUT1, date; args...)
+
+"""
+    getΔUT1_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error in the difference between UTC and UT1 for a certain `date` in seconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getΔUT1_err(eop, date; args...) = interpolate(eop, :ΔUT1_err, date; args...)
+
+"""
+    getlod(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the excess length of day for a certain `date` in milliseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getlod(eop, date; args...) = interpolate(eop, :lod, date; args...)
+
+"""
+    getlod_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error in the excess length of day for a certain `date` in milliseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getlod_err(eop, date; args...) = interpolate(eop, :lod_err, date; args...)
+
+#######################################
+# IAU 1980 precession/nutation theory #
+#######################################
+
+"""
+    getdψ(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the ecliptic nutation correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdψ(eop, date; args...) = interpolate(eop, :dψ, date; args...)
+
+"""
+    getdψ_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error in the ecliptic nutation correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdψ_err(eop, date; args...) = interpolate(eop, :dψ_err, date; args...)
+
+"""
+    getdϵ(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the ecliptic obliquity correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdϵ(eop, date; args...) = interpolate(eop, :dϵ, date; args...)
+
+"""
+    getdϵ_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error in the ecliptic obliquity correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdϵ_err(eop, date; args...) = interpolate(eop, :dϵ_err, date; args...)
+
+"""
+    precession_nutation80(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the ecliptic corrections for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+precession_nutation80(eop, date; args...) = (getdψ(eop, date; args...), getdϵ(eop, date; warnings=false, args...))
+
+############################################
+# IAU 2000/2006 precession/nutation theory #
+############################################
+
+"""
+    getdx(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdx(eop, date; args...) = interpolate(eop, :dx, date; args...)
+
+"""
+    getdx_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error in celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdx_err(eop, date; args...) = interpolate(eop, :dx_err, date; args...)
+
+"""
+    getdy(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdy(eop, date; args...) = interpolate(eop, :dy, date; args...)
+
+"""
+    getdy_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the error in celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+getdy_err(eop, date; args...) = interpolate(eop, :dy_err, date; args...)
+
+"""
+    precession_nutation00(eop::EOParameters, date; extrapolate=true, warnings=true)
+
+Get the celestial pole coordinate corrections for a certain `date` in milliarcseconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+If `extrapolate` is `false` an exception will be thrown if `date` is beyond the range of
+the table contained in `eop`.
+If `warnings` is `true` the user will be warned if the result is extrapolated.
+"""
+precession_nutation00(eop, date; args...) = (getdx(eop, date; args...), getdy(eop, date; warnings=false, args...))
 
 end # module
