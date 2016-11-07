@@ -73,6 +73,158 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
+    "location": "api.html#EarthOrientation.getdx-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdx",
+    "category": "Method",
+    "text": "getdx(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the celestial pole x-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getdx_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdx_err",
+    "category": "Method",
+    "text": "getdx_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error in celestial pole x-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getdy-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdy",
+    "category": "Method",
+    "text": "getdy(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the celestial pole y-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getdy_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdy_err",
+    "category": "Method",
+    "text": "getdy_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error in celestial pole y-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getdψ-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdψ",
+    "category": "Method",
+    "text": "getdψ(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the ecliptic nutation correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getdψ_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdψ_err",
+    "category": "Method",
+    "text": "getdψ_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error in the ecliptic nutation correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getdϵ-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdϵ",
+    "category": "Method",
+    "text": "getdϵ(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the ecliptic obliquity correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getdϵ_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getdϵ_err",
+    "category": "Method",
+    "text": "getdϵ_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error in the ecliptic obliquity correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getlod-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getlod",
+    "category": "Method",
+    "text": "getlod(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the excess length of day for a certain date in milliseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getlod_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getlod_err",
+    "category": "Method",
+    "text": "getlod_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error in the excess length of day for a certain date in milliseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getxp-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getxp",
+    "category": "Method",
+    "text": "getxp(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the x-coordinate of Earth's north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getxp_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getxp_err",
+    "category": "Method",
+    "text": "getxp_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error for the x-coordinate of Earth's north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getyp-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getyp",
+    "category": "Method",
+    "text": "getyp(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the y-coordinate of Earth's north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getyp_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getyp_err",
+    "category": "Method",
+    "text": "getyp_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error for the y-coordinate of Earth's north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getΔUT1-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getΔUT1",
+    "category": "Method",
+    "text": "getΔUT1(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the difference between UTC and UT1 for a certain date in seconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.getΔUT1_err-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.getΔUT1_err",
+    "category": "Method",
+    "text": "getΔUT1_err(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the error in the difference between UTC and UT1 for a certain date in seconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.polarmotion-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.polarmotion",
+    "category": "Method",
+    "text": "polarmotion(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the coordinates of Earth's north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.precession_nutation00-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.precession_nutation00",
+    "category": "Method",
+    "text": "precession_nutation00(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the celestial pole coordinate corrections for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.precession_nutation80-Tuple{Any,Any}",
+    "page": "API",
+    "title": "EarthOrientation.precession_nutation80",
+    "category": "Method",
+    "text": "precession_nutation80(eop::EOParameters, date; extrapolate=true, warnings=true)\n\nGet the ecliptic corrections for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n"
+},
+
+{
     "location": "api.html#API-1",
     "page": "API",
     "title": "API",
