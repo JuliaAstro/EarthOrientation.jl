@@ -23,17 +23,17 @@ using EarthOrientation
 EarthOrientation.update()
 ```
 
-Parse the data files into an `EOPData` object:
+Parse the data files into an `EOParameters` object:
 
 ```julia
-eop = EOPData()
+eop = EOParameters()
 ```
 
 By default the files downloaded by `EarthOrientation.update()` will be used. It is also possible to pass
 different [finals.all][finals-link] and [finals2000A.all][2000A-link] files in CSV format.
 
 ```julia
-eop = EOPData("finals.csv", "finals2000A.csv")
+eop = EOParameters("finals.csv", "finals2000A.csv")
 ```
 
 Get the current Earth orientation parameters, e.g. for polar motion:
@@ -50,6 +50,8 @@ Or the current difference between UT1 and UTC and the associated prediction erro
 ```
 
 ## Documentation
+
+Please refer to the [documentation](https://helgee.github.io/EarthOrientation.jl) for additional information.
 
 [travis-image]: https://travis-ci.org/helgee/EarthOrientation.jl.svg?branch=master
 [travis-link]: https://travis-ci.org/helgee/EarthOrientation.jl

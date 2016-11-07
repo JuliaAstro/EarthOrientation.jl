@@ -13,5 +13,8 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/helgee/EarthOrientation.jl.git"
+    repo = "github.com/helgee/EarthOrientation.jl.git",
+    target = "build",
+    deps = nothing,
+    make = nothing,
 )

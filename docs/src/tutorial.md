@@ -7,10 +7,10 @@ using EarthOrientation
 EarthOrientation.update()
 ```
 
-Parse the data files into an `EOPData` object:
+Parse the data files into an `EOParameters` object:
 
 ```julia
-eop = EOPData()
+eop = EOParameters()
 ```
 
 By default the files downloaded by `EarthOrientation.update()` will be used. It is also possible to pass
@@ -18,7 +18,7 @@ different [finals.all](https://datacenter.iers.org/eop/-/somos/5Rgv/getMeta/7/fi
 [finals2000A.all](https://datacenter.iers.org/eop/-/somos/5Rgv/getMeta/9/finals2000A.all) files in CSV format.
 
 ```julia
-eop = EOPData("finals.csv", "finals2000A.csv")
+eop = EOParameters("finals.csv", "finals2000A.csv")
 ```
 
 Get the current Earth orientation parameters, e.g. for polar motion:
