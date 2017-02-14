@@ -1,6 +1,6 @@
 # EarthOrientation.jl
 
-*Acquire and interpolate IERS Earth orientation parameters in Julia.*
+*Calculate Earth orientation parameters from IERS tables in Julia.*
 
 ## Installation
 

@@ -3,7 +3,7 @@ module EarthOrientation
 import Base.Dates: datetime2julian, julian2datetime, Date, today, days
 using SmoothingSplines
 
-export EOParameters, interpolate
+export EOParams, interpolate
 export polarmotion, getxp, getxp_err, getyp, getyp_err
 export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
 export precession_nutation00, getdx, getdx_err, getdy, getdy_err
@@ -76,7 +76,7 @@ function isold(file)
 end
 
 "Contains Earth orientation parameters since 1973-01-01 until "
-type EOParameters
+type EOParams
     "Creation date of the contained IERS tables."
     date::Date
     "All modified Julian dates covered by this table."
@@ -116,7 +116,7 @@ type EOParameters
     "Error in celestial pole y-coordinate correction."
     dy_err::SmoothingSpline{Float64}
 
-    EOParameters(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
+    EOParams(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
 end
 
 columns = Dict(
@@ -138,13 +138,13 @@ columns = Dict(
     :dy_err => 23,
 )
 
-function EOParameters(iau1980::String, iau2000::String)
+function EOParams(iau1980::String, iau2000::String)
     data80, header80 = readdlm(iau1980, ';', header=true)
     data00, header00 = readdlm(iau2000, ';', header=true)
     date = getdate(data80)
     mjd = Vector{Float64}(data80[:,1])
-    eop = EOParameters(date, mjd)
-    for field in fieldnames(EOParameters)[4:end]
+    eop = EOParams(date, mjd)
+    for field in fieldnames(EOParams)[4:end]
         col = columns[field]
         data = col < 20 ? data80 : data00
         row = findlast(data[:,col] .!= "")
@@ -153,11 +153,11 @@ function EOParameters(iau1980::String, iau2000::String)
     end
     return eop
 end
-EOParameters() = EOParameters(FILES...)
+EOParams() = EOParams(FILES...)
 
-Base.show(io::IO, eop::EOParameters) = print(io, "EOParameters($(eop.date))")
+Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
 
-function interpolate(eop::EOParameters, field::Symbol, jd::Float64; extrapolate=true, warnings=true)
+function interpolate(eop::EOParams, field::Symbol, jd::Float64; extrapolate=true, warnings=true)
     mjd = jd - MJD_EPOCH
     before = mjd < eop.mjd[1]
     after = mjd > eop.lastdate[field]
@@ -174,7 +174,7 @@ function interpolate(eop::EOParameters, field::Symbol, jd::Float64; extrapolate=
     predict(getfield(eop, field), mjd)
 end
 
-function interpolate(eop::EOParameters, field::Symbol, dt::DateTime; args...)
+function interpolate(eop::EOParams, field::Symbol, dt::DateTime; args...)
     interpolate(eop, field, datetime2julian(dt); args...)
 end
 
@@ -183,7 +183,7 @@ end
 ################
 
 """
-    getxp(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getxp(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the x-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
@@ -195,7 +195,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getxp(eop, date; args...) = interpolate(eop, :xp, date; args...)
 
 """
-    getxp_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getxp_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error for the x-coordinate of Earth's north pole w.r.t. the CIO
 for a certain `date` in arcseconds.
@@ -208,7 +208,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getxp_err(eop, date; args...) = interpolate(eop, :xp_err, date; args...)
 
 """
-    getyp(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getyp(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the y-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
@@ -220,7 +220,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getyp(eop, date; args...) = interpolate(eop, :yp, date; args...)
 
 """
-    getyp_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getyp_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error for the y-coordinate of Earth's north pole w.r.t. the CIO
 for a certain `date` in arcseconds.
@@ -233,7 +233,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getyp_err(eop, date; args...) = interpolate(eop, :yp_err, date; args...)
 
 """
-    polarmotion(eop::EOParameters, date; extrapolate=true, warnings=true)
+    polarmotion(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the coordinates of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
@@ -249,7 +249,7 @@ polarmotion(eop, date; args...) = (getxp(eop, date; args...), getyp(eop, date; w
 ################
 
 """
-    getΔUT1(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getΔUT1(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the difference between UTC and UT1 for a certain `date` in seconds.
 
@@ -261,7 +261,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getΔUT1(eop, date; args...) = interpolate(eop, :ΔUT1, date; args...)
 
 """
-    getΔUT1_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getΔUT1_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error in the difference between UTC and UT1 for a certain `date` in seconds.
 
@@ -273,7 +273,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getΔUT1_err(eop, date; args...) = interpolate(eop, :ΔUT1_err, date; args...)
 
 """
-    getlod(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getlod(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the excess length of day for a certain `date` in milliseconds.
 
@@ -285,7 +285,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getlod(eop, date; args...) = interpolate(eop, :lod, date; args...)
 
 """
-    getlod_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getlod_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error in the excess length of day for a certain `date` in milliseconds.
 
@@ -301,7 +301,7 @@ getlod_err(eop, date; args...) = interpolate(eop, :lod_err, date; args...)
 #######################################
 
 """
-    getdψ(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdψ(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the ecliptic nutation correction for a certain `date` in milliarcseconds.
 
@@ -313,7 +313,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdψ(eop, date; args...) = interpolate(eop, :dψ, date; args...)
 
 """
-    getdψ_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdψ_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error in the ecliptic nutation correction for a certain `date` in milliarcseconds.
 
@@ -325,7 +325,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdψ_err(eop, date; args...) = interpolate(eop, :dψ_err, date; args...)
 
 """
-    getdϵ(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdϵ(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the ecliptic obliquity correction for a certain `date` in milliarcseconds.
 
@@ -337,7 +337,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdϵ(eop, date; args...) = interpolate(eop, :dϵ, date; args...)
 
 """
-    getdϵ_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdϵ_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error in the ecliptic obliquity correction for a certain `date` in milliarcseconds.
 
@@ -349,7 +349,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdϵ_err(eop, date; args...) = interpolate(eop, :dϵ_err, date; args...)
 
 """
-    precession_nutation80(eop::EOParameters, date; extrapolate=true, warnings=true)
+    precession_nutation80(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the ecliptic corrections for a certain `date` in milliarcseconds.
 
@@ -365,7 +365,7 @@ precession_nutation80(eop, date; args...) = (getdψ(eop, date; args...), getdϵ(
 ############################################
 
 """
-    getdx(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdx(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
 
@@ -377,7 +377,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdx(eop, date; args...) = interpolate(eop, :dx, date; args...)
 
 """
-    getdx_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdx_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error in celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
 
@@ -389,7 +389,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdx_err(eop, date; args...) = interpolate(eop, :dx_err, date; args...)
 
 """
-    getdy(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdy(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
 
@@ -401,7 +401,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdy(eop, date; args...) = interpolate(eop, :dy, date; args...)
 
 """
-    getdy_err(eop::EOParameters, date; extrapolate=true, warnings=true)
+    getdy_err(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the error in celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
 
@@ -413,7 +413,7 @@ If `warnings` is `true` the user will be warned if the result is extrapolated.
 getdy_err(eop, date; args...) = interpolate(eop, :dy_err, date; args...)
 
 """
-    precession_nutation00(eop::EOParameters, date; extrapolate=true, warnings=true)
+    precession_nutation00(eop::EOParams, date; extrapolate=true, warnings=true)
 
 Get the celestial pole coordinate corrections for a certain `date` in milliarcseconds.
 

@@ -4,7 +4,7 @@ using Base.Test
 
 @testset "EarthOrientation" begin
     @testset "API" begin
-        eop = EOParameters()
+        eop = EOParams()
         dt = Base.Dates.DateTime(2000, 1, 1)
         @test interpolate(eop, :dx, Base.Dates.datetime2julian(dt)) == -0.135
         @test interpolate(eop, :dx, dt) == -0.135
