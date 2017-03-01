@@ -2,6 +2,8 @@ using EarthOrientation
 import EarthOrientation.OutOfRangeError
 using Base.Test
 
+EarthOrientation.update()
+
 @testset "EarthOrientation" begin
     @testset "API" begin
         eop = EOParams()

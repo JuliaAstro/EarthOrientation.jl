@@ -2,6 +2,7 @@ module EarthOrientation
 
 import Base.Dates: datetime2julian, julian2datetime, Date, today, days
 using SmoothingSplines
+using RemoteFiles
 
 export EOParams, interpolate
 export polarmotion, getxp, getxp_err, getyp, getyp_err
@@ -9,19 +10,16 @@ export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
 export precession_nutation00, getdx, getdx_err, getdy, getdy_err
 export getΔUT1, getΔUT1_err, getlod, getlod_err
 
-function __init__()
-    !isdir(PATH) && update()
-    if isold(FILES[1])
-        warn("Outdated EOP data. Please call 'EarthOrientation.update()'.")
-    end
-end
-
-const PATH = abspath(dirname(@__FILE__), "..", "data")
-
-const NAMES = ("IAU 1980", "IAU 2000")
-const FILES = (joinpath(PATH, "finals.csv"), joinpath(PATH, "finals2000A.csv"))
-const URLS = ("https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
-              "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/9/finals2000A.all/csv")
+const iau1980 = @RemoteFile(
+    "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
+    file="finals.csv",
+    updates=:thursdays,
+)
+const iau2000 = @RemoteFile(
+    "https://datacenter.iers.org/eop/-/somos/6Rgv/latestXL/9/finals2000A.all/csv",
+    file="finals2000A.csv",
+    updates=:thursdays,
+)
 
 const MJD_EPOCH = 2400000.5
 date_from_mjd(mjd) = Date(julian2datetime(mjd + MJD_EPOCH))
@@ -30,7 +28,8 @@ type OutOfRangeError <: Base.Exception
     mjd::Float64
     when::String
 end
-Base.showerror(io::IO, err::OutOfRangeError) = print(io, "No data available ", err.when, " ", date_from_mjd(err.mjd), ".")
+Base.showerror(io::IO, err::OutOfRangeError) = print(io, "No data available ",
+    err.when, " ", date_from_mjd(err.mjd), ".")
 warn_extrapolation(mjd, when) = warn("No data available $when $(date_from_mjd(mjd)). Extrapolation is probably imprecise.")
 
 """
@@ -40,18 +39,8 @@ Download weekly EOP data from the IERS servers if newer files are available or
 no data has been downloaded previously.
 """
 function update()
-    !isdir(PATH) && mkdir(PATH)
-    dt = now()
-    for (name, file, url) in zip(NAMES, FILES, URLS)
-        needsupdate = isfile(file) ? isold(file) : true
-        if needsupdate
-            info("Updating $name EOP data.")
-            download(url, file)
-        else
-            info("$name EOP data is up-to-date.")
-        end
-    end
-    nothing
+    download(iau1980)
+    download(iau2000)
 end
 
 """
@@ -62,17 +51,6 @@ Determine the creation date of an IERS table by finding the last entry which is 
 function getdate(data)
     idx = findlast(data[:,5] .== "final")
     Date(data[idx,2], data[idx,3], data[idx,4])
-end
-
-"""
-    isold(file)
-
-Check whether new EOP data should be available, i.e. if the CSV `file` is older than a week.
-"""
-function isold(file)
-    data, header = readdlm(file, ';', header=true)
-    timestamp = getdate(data)
-    days(today() - timestamp) > 7
 end
 
 "Contains Earth orientation parameters since 1973-01-01 until "
@@ -119,7 +97,7 @@ type EOParams
     EOParams(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
 end
 
-columns = Dict(
+const columns = Dict(
     :xp => 6,
     :xp_err => 7,
     :yp => 8,
@@ -138,9 +116,9 @@ columns = Dict(
     :dy_err => 23,
 )
 
-function EOParams(iau1980::String, iau2000::String)
-    data80, header80 = readdlm(iau1980, ';', header=true)
-    data00, header00 = readdlm(iau2000, ';', header=true)
+function EOParams(iau1980file::String, iau2000file::String)
+    data80, header80 = readdlm(iau1980file, ';', header=true)
+    data00, header00 = readdlm(iau2000file, ';', header=true)
     date = getdate(data80)
     mjd = Vector{Float64}(data80[:,1])
     eop = EOParams(date, mjd)
@@ -149,11 +127,12 @@ function EOParams(iau1980::String, iau2000::String)
         data = col < 20 ? data80 : data00
         row = findlast(data[:,col] .!= "")
         merge!(eop.lastdate, Dict(field => mjd[row]))
-        setfield!(eop, field, fit(SmoothingSpline, mjd[1:row], Vector{Float64}(data[1:row,col]), 0.0))
+        setfield!(eop, field, fit(SmoothingSpline, mjd[1:row],
+            Vector{Float64}(data[1:row,col]), 0.0))
     end
     return eop
 end
-EOParams() = EOParams(FILES...)
+EOParams() = EOParams(path(iau1980), path(iau2000))
 
 Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
 
