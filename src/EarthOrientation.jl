@@ -10,16 +10,18 @@ export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
 export precession_nutation00, getdx, getdx_err, getdy, getdy_err
 export getΔUT1, getΔUT1_err, getlod, getlod_err
 
-const iau1980 = @RemoteFile(
-    "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
-    file="finals.csv",
-    updates=:thursdays,
-)
-const iau2000 = @RemoteFile(
-    "https://datacenter.iers.org/eop/-/somos/6Rgv/latestXL/9/finals2000A.all/csv",
-    file="finals2000A.csv",
-    updates=:thursdays,
-)
+const data = @RemoteFileSet begin
+    iau1980 = @RemoteFile(
+        "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
+        file="finals.csv",
+        updates=:thursdays,
+    )
+    iau2000 = @RemoteFile(
+        "https://datacenter.iers.org/eop/-/somos/6Rgv/latestXL/9/finals2000A.all/csv",
+        file="finals2000A.csv",
+        updates=:thursdays,
+    )
+end
 
 const MJD_EPOCH = 2400000.5
 date_from_mjd(mjd) = Date(julian2datetime(mjd + MJD_EPOCH))
@@ -39,8 +41,7 @@ Download weekly EOP data from the IERS servers if newer files are available or
 no data has been downloaded previously.
 """
 function update()
-    download(iau1980)
-    download(iau2000)
+    download(data)
 end
 
 """
@@ -132,7 +133,7 @@ function EOParams(iau1980file::String, iau2000file::String)
     end
     return eop
 end
-EOParams() = EOParams(path(iau1980), path(iau2000))
+EOParams() = EOParams(path(data[:iau1980]), path(data[:iau2000]))
 
 Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
 
