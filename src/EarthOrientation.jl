@@ -133,7 +133,7 @@ function EOParams(iau1980file::String, iau2000file::String)
     end
     return eop
 end
-EOParams() = EOParams(path(data[:iau1980]), path(data[:iau2000]))
+EOParams() = EOParams(paths(data)...)
 
 Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
 
