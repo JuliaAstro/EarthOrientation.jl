@@ -30,8 +30,6 @@ using EarthOrientation
 EarthOrientation.update()
 ```
 
-If the data is older than one week newer EOP data should be available and a warning will be given on import.
-
 ## Loading Earth Orientation Data
 
 The downloaded data is parsed into an `EOParams` object:

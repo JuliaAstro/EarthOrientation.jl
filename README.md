@@ -23,17 +23,18 @@ using EarthOrientation
 EarthOrientation.update()
 ```
 
-Parse the data files into an `EOParameters` object:
+Parse the data files into an `EOParams` object:
 
 ```julia
-eop = EOParameters()
+eop = EOParams()
 ```
 
-By default the files downloaded by `EarthOrientation.update()` will be used. It is also possible to pass
-different [finals.all][finals-link] and [finals2000A.all][2000A-link] files in CSV format.
+By default the files downloaded by `EarthOrientation.update()` will be used.
+It is also possible to pass different [finals.all][finals-link] and
+[finals2000A.all][2000A-link] files in CSV format.
 
 ```julia
-eop = EOParameters("finals.csv", "finals2000A.csv")
+eop = EOParams("finals.csv", "finals2000A.csv")
 ```
 
 Get the current Earth orientation parameters, e.g. for polar motion:

@@ -10,7 +10,7 @@ export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
 export precession_nutation00, getdx, getdx_err, getdy, getdy_err
 export getΔUT1, getΔUT1_err, getlod, getlod_err
 
-const data = @RemoteFileSet begin
+const data = @RemoteFileSet "IERS Data" begin
     iau1980 = @RemoteFile(
         "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
         file="finals.csv",
@@ -32,7 +32,8 @@ type OutOfRangeError <: Base.Exception
 end
 Base.showerror(io::IO, err::OutOfRangeError) = print(io, "No data available ",
     err.when, " ", date_from_mjd(err.mjd), ".")
-warn_extrapolation(mjd, when) = warn("No data available $when $(date_from_mjd(mjd)). Extrapolation is probably imprecise.")
+warn_extrapolation(mjd, when) = warn("No data available $when " *
+    "$(date_from_mjd(mjd)). Extrapolation is probably imprecise.")
 
 """
     update()
@@ -54,7 +55,6 @@ function getdate(data)
     Date(data[idx,2], data[idx,3], data[idx,4])
 end
 
-"Contains Earth orientation parameters since 1973-01-01 until "
 type EOParams
     "Creation date of the contained IERS tables."
     date::Date
@@ -117,6 +117,13 @@ const columns = Dict(
     :dy_err => 23,
 )
 
+"""
+    EOParams(iau1980file::String, iau2000file::String)
+
+Parse IERS data files into a `EOParams` object.
+`iau1980file` and `iau2000file` are the paths to a 'finals.all' and a
+'finals2000A.all' CSV file, respectively.
+"""
 function EOParams(iau1980file::String, iau2000file::String)
     data80, header80 = readdlm(iau1980file, ';', header=true)
     data00, header00 = readdlm(iau2000file, ';', header=true)
@@ -133,6 +140,12 @@ function EOParams(iau1980file::String, iau2000file::String)
     end
     return eop
 end
+
+"""
+    EOParams()
+
+Construct a `EOParams` object from automatically downloaded IERS data files.
+"""
 EOParams() = EOParams(paths(data)...)
 
 Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
@@ -222,7 +235,8 @@ If `extrapolate` is `false` an exception will be thrown if `date` is beyond the 
 the table contained in `eop`.
 If `warnings` is `true` the user will be warned if the result is extrapolated.
 """
-polarmotion(eop, date; args...) = (getxp(eop, date; args...), getyp(eop, date; warnings=false, args...))
+polarmotion(eop, date; args...) = (getxp(eop, date; args...),
+    getyp(eop, date; warnings=false, args...))
 
 ################
 # ΔUT1 and LOD #
@@ -338,7 +352,8 @@ If `extrapolate` is `false` an exception will be thrown if `date` is beyond the 
 the table contained in `eop`.
 If `warnings` is `true` the user will be warned if the result is extrapolated.
 """
-precession_nutation80(eop, date; args...) = (getdψ(eop, date; args...), getdϵ(eop, date; warnings=false, args...))
+precession_nutation80(eop, date; args...) = (getdψ(eop, date; args...),
+    getdϵ(eop, date; warnings=false, args...))
 
 ############################################
 # IAU 2000/2006 precession/nutation theory #
