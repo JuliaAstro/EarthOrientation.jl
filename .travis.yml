@@ -9,9 +9,10 @@ julia:
 notifications:
   email: false
 # uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("EarthOrientation"); Pkg.test("EarthOrientation"; coverage=true)'
+script:
+ - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+ - julia -e 'Pkg.clone("https://github.com/helgee/RemoteFiles.jl.git")'
+ - julia -e 'Pkg.clone(pwd()); Pkg.build("EarthOrientation"); Pkg.test("EarthOrientation"; coverage=true)'
 after_success:
   # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("EarthOrientation")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
