@@ -61,7 +61,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Tutorial",
     "title": "Getting Earth Orientation Data",
     "category": "section",
-    "text": "When the package is imported for the first time the required data will be automatically downloaded from the IERS servers. After that the data needs to be updated manually like shown below.using EarthOrientation\nEarthOrientation.update()If the data is older than one week newer EOP data should be available and a warning will be given on import."
+    "text": "When the package is imported for the first time the required data will be automatically downloaded from the IERS servers. After that the data needs to be updated manually like shown below.using EarthOrientation\nEarthOrientation.update()"
 },
 
 {
@@ -89,11 +89,19 @@ var documenterSearchIndex = {"docs": [
 },
 
 {
-    "location": "api.html#EarthOrientation.EOParams",
+    "location": "api.html#EarthOrientation.EOParams-Tuple{String,String}",
     "page": "API",
     "title": "EarthOrientation.EOParams",
-    "category": "Type",
-    "text": "Contains Earth orientation parameters since 1973-01-01 until \n\n\n\n"
+    "category": "Method",
+    "text": "EOParams(iau1980file::String, iau2000file::String)\n\nParse IERS data files into a EOParams object. iau1980file and iau2000file are the paths to a 'finals.all' and a 'finals2000A.all' CSV file, respectively.\n\n\n\n"
+},
+
+{
+    "location": "api.html#EarthOrientation.EOParams-Tuple{}",
+    "page": "API",
+    "title": "EarthOrientation.EOParams",
+    "category": "Method",
+    "text": "EOParams()\n\nConstruct a EOParams object from automatically downloaded IERS data files.\n\n\n\n"
 },
 
 {
@@ -270,14 +278,6 @@ var documenterSearchIndex = {"docs": [
     "title": "EarthOrientation.getdate",
     "category": "Method",
     "text": "getdate(data)\n\nDetermine the creation date of an IERS table by finding the last entry which is marked as \"final\".\n\n\n\n"
-},
-
-{
-    "location": "internals.html#EarthOrientation.isold-Tuple{Any}",
-    "page": "Internals",
-    "title": "EarthOrientation.isold",
-    "category": "Method",
-    "text": "isold(file)\n\nCheck whether new EOP data should be available, i.e. if the CSV file is older than a week.\n\n\n\n"
 },
 
 {
