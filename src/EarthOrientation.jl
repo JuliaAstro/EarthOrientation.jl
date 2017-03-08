@@ -146,7 +146,7 @@ end
 
 Construct a `EOParams` object from automatically downloaded IERS data files.
 """
-EOParams() = EOParams(paths(data)...)
+EOParams() = EOParams(paths(data, :iau1980, :iau2000)...)
 
 Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
 
