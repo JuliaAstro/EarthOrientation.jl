@@ -133,7 +133,7 @@ function EOParams(iau1980file::String, iau2000file::String)
     for field in fieldnames(EOParams)[4:end]
         col = columns[field]
         data = col < 20 ? data80 : data00
-        row = findlast(.!isempty.(data[:,col]))
+        row = findfirst(isempty.(data[:,col])) - 1
         merge!(eop.lastdate, Dict(field => mjd[row]))
         setfield!(eop, field, fit(SmoothingSpline, mjd[1:row],
             Vector{Float64}(data[1:row,col]), 0.0))
