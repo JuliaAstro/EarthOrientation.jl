@@ -1,5 +1,7 @@
 module EarthOrientation
 
+__precompile__()
+
 import Base.Dates: datetime2julian, julian2datetime, Date, today, days
 using SmoothingSplines
 using RemoteFiles
