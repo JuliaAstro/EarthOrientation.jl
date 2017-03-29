@@ -13,7 +13,7 @@ export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
 export precession_nutation00, getdx, getdx_err, getdy, getdy_err
 export getΔUT1, getΔUT1_err, getlod, getlod_err
 
-const data = @RemoteFileSet "IERS Data" begin
+@RemoteFileSet data "IERS Data" begin
     iau1980 = @RemoteFile(
         "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
         file="finals.csv",
