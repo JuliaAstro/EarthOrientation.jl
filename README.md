@@ -57,7 +57,7 @@ information.
 
 [travis-image]: https://travis-ci.org/JuliaAstro/EarthOrientation.jl.svg?branch=master
 [travis-link]: https://travis-ci.org/JuliaAstro/EarthOrientation.jl
-[av-image]: https://ci.appveyor.com/api/projects/status/y66wet5aa819vxwu?svg=true
+[av-image]: https://ci.appveyor.com/api/projects/status/u9v83v216i8g8tdq?svg=true
 [av-link]: https://ci.appveyor.com/project/helgee/earthorientation-jl
 [coveralls-image]: https://coveralls.io/repos/github/JuliaAstro/EarthOrientation.jl/badge.svg?branch=master
 [coveralls-link]: https://coveralls.io/github/JuliaAstro/EarthOrientation.jl?branch=master
