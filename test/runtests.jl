@@ -10,18 +10,18 @@ EarthOrientation.update()
         dt = Base.Dates.DateTime(2000, 1, 1)
         @test interpolate(eop, :dx, Base.Dates.datetime2julian(dt)) == -0.135
         @test interpolate(eop, :dx, dt) == -0.135
-        @test getxp(eop, dt) == 0.043299
-        @test getxp(dt) == 0.043299
+        @test getxp(eop, dt) == 0.043301
+        @test getxp(dt) == 0.043301
         @test getxp_err(eop, dt) == 0.000092
         @test getxp_err(dt) == 0.000092
-        @test getyp(eop, dt) == 0.377859
-        @test getyp(dt) == 0.377859
+        @test getyp(eop, dt) == 0.377879
+        @test getyp(dt) == 0.377879
         @test getyp_err(eop, dt) == 0.000099
         @test getyp_err(dt) == 0.000099
-        @test polarmotion(eop, dt) == (0.043299, 0.377859)
-        @test polarmotion(dt) == (0.043299, 0.377859)
-        @test getΔUT1(eop, dt) == 0.3554755
-        @test getΔUT1(dt) == 0.3554755
+        @test polarmotion(eop, dt) == (0.043301, 0.377879)
+        @test polarmotion(dt) == (0.043301, 0.377879)
+        @test getΔUT1(eop, dt) == 0.3554784
+        @test getΔUT1(dt) == 0.3554784
         @test getΔUT1_err(eop, dt) == 0.0000099
         @test getΔUT1_err(dt) == 0.0000099
         @test getlod(eop, dt) == 0.9333
