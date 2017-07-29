@@ -1,4 +1,4 @@
-julia 0.5
-SmoothingSplines 0.0.1
-RemoteFiles
-OptionalData
+julia 0.6
+SmoothingSplines 0.1.2
+RemoteFiles 0.1.0
+OptionalData 0.1.0
