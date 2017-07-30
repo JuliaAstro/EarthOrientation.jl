@@ -21,63 +21,31 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Installation",
     "category": "section",
-    "text": "The package can be installed through Julia's package manager:Pkg.clone(\"https://github.com/helgee/EarthOrientation.jl.git\")\n# As soon as the package has been published in METADATA.jl use:\n# Pkg.add(\"EarthOrientation\")"
+    "text": "The package can be installed through Julia's package manager:Pkg.add(\"EarthOrientation\")"
 },
 
 {
-    "location": "index.html#Get-Started-1",
+    "location": "index.html#Quickstart-1",
     "page": "Home",
-    "title": "Get Started",
+    "title": "Quickstart",
     "category": "section",
-    "text": "Please follow the Tutorial or refer to the API documentation."
+    "text": "Fetch the latest [IERS][iers-link] tables:using EarthOrientation\nEarthOrientation.update()Get the current Earth orientation parameters, e.g. for polar motion:xp, yp = polarmotion(now()) # arcsecondsOr the current difference between UT1 and UTC and the associated prediction error:ΔUT1 = getΔUT1(now()) # seconds\nΔUT1_err = getΔUT1_err(now()) # seconds"
 },
 
 {
-    "location": "index.html#Contribute-1",
+    "location": "index.html#Available-data-1",
     "page": "Home",
-    "title": "Contribute",
+    "title": "Available data",
     "category": "section",
-    "text": "Report issues on the project's issue tracker or fork the project and open a pull request."
+    "text": "Polar motion:\nx-coordinate of Earth's north pole: getxp\ny-coordinate of Earth's north pole: getyp\nboth: polarmotion\nEarth rotation\nDifference between UT1 and UTC: getΔUT1\nExcess length of day: getlod\nPrecession and nutation based on the 1980 IAU conventions\nCorrection to the nutation of the ecliptic: getdψ\nCorrection to the obliquity of the ecliptic: getdϵ\nboth: precession_nutation80\nPrecession and nutation based on the 2000 IAU conventions\nCorrection to the celestial pole's x-coordinate: getdx\nCorrection to the celestial pole's y-coordinate: getdy\nboth: precession_nutation00There is an associated function that returns the prediction error for each data type, e.g. getxp_err."
 },
 
 {
-    "location": "tutorial.html#",
-    "page": "Tutorial",
-    "title": "Tutorial",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "tutorial.html#Tutorial-1",
-    "page": "Tutorial",
-    "title": "Tutorial",
+    "location": "index.html#Manual-Data-Management-1",
+    "page": "Home",
+    "title": "Manual Data Management",
     "category": "section",
-    "text": "EarthOrientation.jl downloads, parses, and interpolates weekly-updated tables from the IERS that contain the following Earth Orientation Parameters (EOP):Polar motion:\nx-coordinate of Earth's north pole: x_p\ny-coordinate of Earth's north pole: y_p\nEarth rotation\nDifference between UT1 and UTC: Delta UT1\nExcess length of day: LOD\nPrecession and nutation based on the 1980 IAU conventions\nCorrection to the nutation of the ecliptic: dpsi\nCorrection to the obliquity of the ecliptic: depsilon\nPrecession and nutation based on the 2000 IAU conventions\nCorrection to the celestial pole's x-coordinate: dx\nCorrection to the celestial pole's y-coordinate: dyThese parameters are required for precise transformations between quasi-inertial and rotating terrestrial reference frames."
-},
-
-{
-    "location": "tutorial.html#Getting-Earth-Orientation-Data-1",
-    "page": "Tutorial",
-    "title": "Getting Earth Orientation Data",
-    "category": "section",
-    "text": "When the package is imported for the first time the required data will be automatically downloaded from the IERS servers. After that the data needs to be updated manually like shown below.using EarthOrientation\nEarthOrientation.update()"
-},
-
-{
-    "location": "tutorial.html#Loading-Earth-Orientation-Data-1",
-    "page": "Tutorial",
-    "title": "Loading Earth Orientation Data",
-    "category": "section",
-    "text": "The downloaded data is parsed into an EOParams object:eop = EOParams()By default the files downloaded by EarthOrientation.update() will be used. It is also possible to manually pass the required finals.all and finals2000A.all files in CSV format.eop = EOParams(\"finals.csv\", \"finals2000A.csv\")This is useful if the data should not be managed by EarthOrientation.jl but by a different system instead."
-},
-
-{
-    "location": "tutorial.html#Interpolating-Earth-Orientation-Data-1",
-    "page": "Tutorial",
-    "title": "Interpolating Earth Orientation Data",
-    "category": "section",
-    "text": "Get the current Earth orientation parameters, e.g. for polar motion:xp, yp = polarmotion(eop, now()) # arcsecondsOr the current difference between UT1 and UTC and the associated prediction error:ΔUT1 = getΔUT1(eop, now()) # seconds\nΔUT1_err = getΔUT1_err(eop, now()) # milliseconds"
+    "text": "By default the files downloaded by EarthOrientation.update() will be used. It is also possible to pass different finals.all and finals2000A.all files in CSV format.using EarthOrientation\n\npush!(EOP_DATA, \"finals.csv\", \"finals2000A.csv\")"
 },
 
 {
@@ -254,38 +222,6 @@ var documenterSearchIndex = {"docs": [
     "title": "API",
     "category": "section",
     "text": "Modules = [EarthOrientation]\nPrivate = false"
-},
-
-{
-    "location": "internals.html#",
-    "page": "Internals",
-    "title": "Internals",
-    "category": "page",
-    "text": ""
-},
-
-{
-    "location": "internals.html#EarthOrientation.getdate-Tuple{Any}",
-    "page": "Internals",
-    "title": "EarthOrientation.getdate",
-    "category": "Method",
-    "text": "getdate(data)\n\nDetermine the creation date of an IERS table by finding the last entry which is marked as \"final\".\n\n\n\n"
-},
-
-{
-    "location": "internals.html#EarthOrientation.update-Tuple{}",
-    "page": "Internals",
-    "title": "EarthOrientation.update",
-    "category": "Method",
-    "text": "update()\n\nDownload weekly EOP data from the IERS servers if newer files are available or no data has been downloaded previously.\n\n\n\n"
-},
-
-{
-    "location": "internals.html#Internals-1",
-    "page": "Internals",
-    "title": "Internals",
-    "category": "section",
-    "text": "Modules = [EarthOrientation]\nPublic = false"
 },
 
 ]}
