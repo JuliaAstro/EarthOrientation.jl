@@ -2,7 +2,10 @@ using EarthOrientation
 import EarthOrientation.OutOfRangeError
 using Base.Test
 
-EarthOrientation.update()
+const FINALS = joinpath(@__DIR__, "finals.csv")
+const FINALS_2000A = joinpath(@__DIR__, "finals2000A.csv")
+
+push!(EOP_DATA, FINALS, FINALS_2000A)
 
 @testset "EarthOrientation" begin
     @testset "API" begin
