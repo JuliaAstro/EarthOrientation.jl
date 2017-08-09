@@ -13,6 +13,12 @@ export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
 export precession_nutation00, getdx, getdx_err, getdy, getdy_err
 export getΔUT1, getΔUT1_err, getlod, getlod_err
 
+function __init__()
+    try
+        push!(EOP_DATA, paths(data, :iau1980, :iau2000)...)
+    end
+end
+
 @RemoteFileSet data "IERS Data" begin
     iau1980 = @RemoteFile(
         "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
