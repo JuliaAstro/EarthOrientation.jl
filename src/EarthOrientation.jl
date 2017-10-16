@@ -14,7 +14,7 @@ export precession_nutation00, getdx, getdx_err, getdy, getdy_err
 export getΔUT1, getΔUT1_err, getlod, getlod_err
 
 function __init__()
-    try
+    if isfile(data)
         push!(EOP_DATA, paths(data, :iau1980, :iau2000)...)
     end
 end
