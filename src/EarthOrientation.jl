@@ -1,6 +1,6 @@
-module EarthOrientation
-
 __precompile__()
+
+module EarthOrientation
 
 import Base.Dates: datetime2julian, julian2datetime, Date, today, days
 using SmoothingSplines
