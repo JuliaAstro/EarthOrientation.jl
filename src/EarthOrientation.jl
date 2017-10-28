@@ -36,7 +36,7 @@ end
 const MJD_EPOCH = 2400000.5
 date_from_mjd(mjd) = Date(julian2datetime(mjd + MJD_EPOCH))
 
-type OutOfRangeError <: Base.Exception
+struct OutOfRangeError <: Base.Exception
     mjd::Float64
     when::String
 end
@@ -67,7 +67,7 @@ function getdate(data)
     Date(data[idx,2], data[idx,3], data[idx,4])
 end
 
-type EOParams
+struct EOParams
     "Creation date of the contained IERS tables."
     date::Date
     "All modified Julian dates covered by this table."
