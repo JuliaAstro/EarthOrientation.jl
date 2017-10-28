@@ -1,6 +1,7 @@
+using Compat.Test
 using EarthOrientation
+
 import EarthOrientation.OutOfRangeError
-using Base.Test
 
 const FINALS = joinpath(@__DIR__, "finals.csv")
 const FINALS_2000A = joinpath(@__DIR__, "finals2000A.csv")

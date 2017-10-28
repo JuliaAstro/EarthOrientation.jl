@@ -1,11 +1,12 @@
-module EarthOrientation
-
 __precompile__()
 
+module EarthOrientation
+
 import Base.Dates: datetime2julian, julian2datetime, Date, today, days
-using SmoothingSplines
-using RemoteFiles
+using Compat.DelimitedFiles
 using OptionalData
+using RemoteFiles
+using SmoothingSplines
 
 export EOParams, EOP_DATA, interpolate
 export polarmotion, getxp, getxp_err, getyp, getyp_err
