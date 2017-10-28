@@ -67,7 +67,7 @@ function getdate(data)
     Date(data[idx,2], data[idx,3], data[idx,4])
 end
 
-struct EOParams
+mutable struct EOParams
     "Creation date of the contained IERS tables."
     date::Date
     "All modified Julian dates covered by this table."
