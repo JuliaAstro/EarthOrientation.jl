@@ -1,5 +1,7 @@
-using Compat.Test
+using Test
 using EarthOrientation
+
+using Dates: DateTime, Year, datetime2julian, now
 
 import EarthOrientation.OutOfRangeError
 
@@ -11,8 +13,8 @@ push!(EOP_DATA, FINALS, FINALS_2000A)
 @testset "EarthOrientation" begin
     @testset "API" begin
         eop = get(EOP_DATA)
-        dt = Base.Dates.DateTime(2000, 1, 1)
-        @test interpolate(eop, :dx, Base.Dates.datetime2julian(dt)) == -0.135
+        dt = DateTime(2000, 1, 1)
+        @test interpolate(eop, :dx, datetime2julian(dt)) == -0.135
         @test interpolate(eop, :dx, dt) == -0.135
         @test getxp(eop, dt) == 0.043301
         @test getxp(dt) == 0.043301
@@ -52,10 +54,10 @@ push!(EOP_DATA, FINALS, FINALS_2000A)
         @test getdy_err(dt) == 0.298
         @test precession_nutation00(eop, dt) == (-0.135, -0.204)
         @test precession_nutation00(dt) == (-0.135, -0.204)
-        dt = Base.Dates.DateTime(2000, 1, 1, 12)
+        dt = DateTime(2000, 1, 1, 12)
         @test getdx(eop, dt) ≈ -0.005462587721092418
-        @test_throws OutOfRangeError getdx(eop, now() + Base.Dates.Year(1), extrapolate=false)
-        dt = Base.Dates.DateTime(1973, 1, 1)
+        @test_throws OutOfRangeError getdx(eop, now() + Year(1), extrapolate=false)
+        dt = DateTime(1973, 1, 1)
         @test_throws OutOfRangeError getdx(eop, dt, extrapolate=false)
     end
 end

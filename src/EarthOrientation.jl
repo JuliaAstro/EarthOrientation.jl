@@ -2,8 +2,8 @@ __precompile__()
 
 module EarthOrientation
 
-import Base.Dates: datetime2julian, julian2datetime, Date, today, days
-using Compat.DelimitedFiles
+using Dates: datetime2julian, julian2datetime, Date, DateTime, today, days
+using DelimitedFiles
 using OptionalData
 using RemoteFiles
 using SmoothingSplines
