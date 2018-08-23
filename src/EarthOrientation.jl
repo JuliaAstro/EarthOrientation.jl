@@ -1,5 +1,3 @@
-__precompile__()
-
 module EarthOrientation
 
 using Dates: datetime2julian, julian2datetime, Date, DateTime, today, days
@@ -42,7 +40,7 @@ struct OutOfRangeError <: Base.Exception
 end
 Base.showerror(io::IO, err::OutOfRangeError) = print(io, "No data available ",
     err.when, " ", date_from_mjd(err.mjd), ".")
-warn_extrapolation(mjd, when) = warn("No data available $when " *
+warn_extrapolation(mjd, when) = @warn("No data available $when " *
     "$(date_from_mjd(mjd)). Extrapolation is probably imprecise.")
 
 """
