@@ -14,7 +14,8 @@ export getΔUT1, getΔUT1_err, getlod, getlod_err
 
 function __init__()
     if isfile(data)
-        push!(EOP_DATA, paths(data, :iau1980, :iau2000)...)
+        eop = EOParams(paths(data, :iau1980, :iau2000)...)
+        push!(EOP_DATA, eop)
     end
 end
 
