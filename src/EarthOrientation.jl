@@ -4,7 +4,6 @@ using Dates: datetime2julian, julian2datetime, Date, DateTime, today, days
 using DelimitedFiles
 using OptionalData
 using RemoteFiles
-using SmoothingSplines
 
 export EOParams, EOP_DATA, interpolate
 export polarmotion, getxp, getxp_err, getyp, getyp_err
@@ -31,6 +30,8 @@ end
         updates=:thursdays,
     )
 end
+
+include("akima.jl")
 
 const MJD_EPOCH = 2400000.5
 date_from_mjd(mjd) = Date(julian2datetime(mjd + MJD_EPOCH))
@@ -74,37 +75,37 @@ mutable struct EOParams
     "Contains the last available data point for every table."
     lastdate::Dict{Symbol, Float64}
     "North pole x-coordinate."
-    xp::SmoothingSpline{Float64}
+    xp::Akima
     "Error in North pole x-coordinate."
-    xp_err::SmoothingSpline{Float64}
+    xp_err::Akima
     "North pole y-coordinate."
-    yp::SmoothingSpline{Float64}
+    yp::Akima
     "Error in North pole y-coordinate."
-    yp_err::SmoothingSpline{Float64}
+    yp_err::Akima
     "Difference between UT1 and UTC."
-    ΔUT1::SmoothingSpline{Float64}
+    ΔUT1::Akima
     "Error in difference between UT1 and UTC."
-    ΔUT1_err::SmoothingSpline{Float64}
+    ΔUT1_err::Akima
     "Excess length of day."
-    lod::SmoothingSpline{Float64}
+    lod::Akima
     "Error in excess length of day."
-    lod_err::SmoothingSpline{Float64}
+    lod_err::Akima
     "Ecliptic nutation correction."
-    dψ::SmoothingSpline{Float64}
+    dψ::Akima
     "Error in ecliptic nutation correction."
-    dψ_err::SmoothingSpline{Float64}
+    dψ_err::Akima
     "Ecliptic obliquity correction"
-    dϵ::SmoothingSpline{Float64}
+    dϵ::Akima
     "Error in ecliptic obliquity correction"
-    dϵ_err::SmoothingSpline{Float64}
+    dϵ_err::Akima
     "Celestial pole x-coordinate correction."
-    dx::SmoothingSpline{Float64}
+    dx::Akima
     "Error in celestial pole x-coordinate correction."
-    dx_err::SmoothingSpline{Float64}
+    dx_err::Akima
     "Celestial pole y-coordinate correction."
-    dy::SmoothingSpline{Float64}
+    dy::Akima
     "Error in celestial pole y-coordinate correction."
-    dy_err::SmoothingSpline{Float64}
+    dy_err::Akima
 
     EOParams(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
 end
@@ -148,8 +149,8 @@ function EOParams(iau1980file::String, iau2000file::String)
         data = col < 20 ? data80 : data00
         row = findfirst(isempty.(data[:,col])) - 1
         merge!(eop.lastdate, Dict(field => mjd[row]))
-        setfield!(eop, field, fit(SmoothingSpline, mjd[1:row],
-            Vector{Float64}(data[1:row,col]), 0.0))
+        setfield!(eop, field,
+                  Akima(mjd[1:row], Vector{Float64}(data[1:row,col])))
     end
     return eop
 end
@@ -170,7 +171,7 @@ function interpolate(eop::EOParams, field::Symbol, jd::Float64; extrapolate=true
         end
     end
 
-    predict(getfield(eop, field), mjd)
+    interpolate(getfield(eop, field), mjd)
 end
 
 function interpolate(eop::EOParams, field::Symbol, dt::DateTime; args...)

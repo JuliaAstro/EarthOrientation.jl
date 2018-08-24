@@ -1,4 +1,3 @@
-julia 0.7-beta
+julia 0.7
 OptionalData 0.2.0
-RemoteFiles 0.2.0
-SmoothingSplines 0.2.0
+RemoteFiles 0.2.1
