@@ -38,8 +38,8 @@ function Akima(x, y)
     Akima(n, x, y, b, c, d)
 end
 
-function interpolate(a::Akima, xi)
-    idx = searchsortedlast(a.x, floor(Int, xi))
+@inline function interpolate(a::Akima, xi)
+    idx = searchsortedlast(a.x, trunc(Int, xi))
     idx == 0 && return a.y[1]
     idx == a.n && return a.y[end]
 

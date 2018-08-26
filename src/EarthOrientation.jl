@@ -78,7 +78,7 @@ mutable struct EOParams
     "Difference between UT1 and TAI."
     UT1_TAI::Akima
     "Set of leap second dates"
-    leaps::Set{Float64}
+    leaps::Set{Int}
     "North pole x-coordinate."
     xp::Akima
     "Error in North pole x-coordinate."
@@ -170,7 +170,7 @@ end
 
 Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
 
-function interpolate(eop::EOParams, field::Symbol, jd::Float64; outside_range=:warn)
+@inline function interpolate(eop::EOParams, field::Symbol, jd::Float64; outside_range=:warn)
     mjd = jd - MJD_EPOCH
     before = mjd < eop.mjd[1]
     after = mjd > eop.lastdate[field]
@@ -190,7 +190,8 @@ function interpolate(eop::EOParams, field::Symbol, jd::Float64; outside_range=:w
 
     if field == :ΔUT1
         Δat = offset_tai_utc(jd)
-        if mjd in eop.leaps
+        imjd = trunc(Int, mjd)
+        if imjd == mjd && imjd in eop.leaps
             Δat -= 1.0
         end
         return interpolate(eop.UT1_TAI, mjd) + Δat
