@@ -92,6 +92,7 @@ end
         @test_nowarn getdx(eop, dt, outside_range=:nothing)
         @test_logs (:warn, "No data available after 2017-10-09. The last valid value will be returned.") getdx(eop, dt, outside_range=:warn)
         @test_throws OutOfRangeError getdx(eop, dt, outside_range=:error)
+        @test_throws ArgumentError getdx(eop, dt, outside_range=:norbert)
         @test_throws OutOfRangeError getdx(eop, DateTime(1973, 1, 1), outside_range=:error)
     end
     @testset "Interpolation" begin
