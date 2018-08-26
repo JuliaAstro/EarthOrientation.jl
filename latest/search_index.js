@@ -69,7 +69,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdx",
     "category": "method",
-    "text": "getdx(date; extrapolate=true, warnings=true)\n\nGet the celestial pole x-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdx(date; outside_range=:warn)\n\nGet the celestial pole x-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -77,7 +77,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdx_err",
     "category": "method",
-    "text": "getdx_err(date; extrapolate=true, warnings=true)\n\nGet the error in celestial pole x-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdx_err(date; outside_range=:warn)\n\nGet the error in celestial pole x-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -85,7 +85,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdy",
     "category": "method",
-    "text": "getdy(date; extrapolate=true, warnings=true)\n\nGet the celestial pole y-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdy(date; outside_range=:warn)\n\nGet the celestial pole y-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -93,7 +93,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdy_err",
     "category": "method",
-    "text": "getdy_err(date; extrapolate=true, warnings=true)\n\nGet the error in celestial pole y-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdy_err(date; outside_range=:warn)\n\nGet the error in celestial pole y-coordinate correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -101,7 +101,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdψ",
     "category": "method",
-    "text": "getdψ(date; extrapolate=true, warnings=true)\n\nGet the ecliptic nutation correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdψ(date; outside_range=:warn)\n\nGet the ecliptic nutation correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -109,7 +109,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdψ_err",
     "category": "method",
-    "text": "getdψ_err(date; extrapolate=true, warnings=true)\n\nGet the error in the ecliptic nutation correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdψ_err(date; outside_range=:warn)\n\nGet the error in the ecliptic nutation correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -117,7 +117,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdϵ",
     "category": "method",
-    "text": "getdϵ(date; extrapolate=true, warnings=true)\n\nGet the ecliptic obliquity correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdϵ(date; outside_range=:warn)\n\nGet the ecliptic obliquity correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -125,7 +125,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getdϵ_err",
     "category": "method",
-    "text": "getdϵ_err(date; extrapolate=true, warnings=true)\n\nGet the error in the ecliptic obliquity correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getdϵ_err(date; outside_range=:warn)\n\nGet the error in the ecliptic obliquity correction for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -133,7 +133,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getlod",
     "category": "method",
-    "text": "getlod(date; extrapolate=true, warnings=true)\n\nGet the excess length of day for a certain date in milliseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getlod(date; outside_range=:warn)\n\nGet the excess length of day for a certain date in milliseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -141,7 +141,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getlod_err",
     "category": "method",
-    "text": "getlod_err(date; extrapolate=true, warnings=true)\n\nGet the error in the excess length of day for a certain date in milliseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getlod_err(date; outside_range=:warn)\n\nGet the error in the excess length of day for a certain date in milliseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -149,7 +149,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getxp",
     "category": "method",
-    "text": "getxp(date; extrapolate=true, warnings=true)\n\nGet the x-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getxp(date; outside_range=:warn)\n\nGet the x-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -157,7 +157,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getxp_err",
     "category": "method",
-    "text": "getxp_err(date; extrapolate=true, warnings=true)\n\nGet the error for the x-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getxp_err(date; outside_range=:warn)\n\nGet the error for the x-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -165,7 +165,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getyp",
     "category": "method",
-    "text": "getyp(date; extrapolate=true, warnings=true)\n\nGet the y-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getyp(date; outside_range=:warn)\n\nGet the y-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -173,7 +173,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getyp_err",
     "category": "method",
-    "text": "getyp_err(date; extrapolate=true, warnings=true)\n\nGet the error for the y-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getyp_err(date; outside_range=:warn)\n\nGet the error for the y-coordinate of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -181,7 +181,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getΔUT1",
     "category": "method",
-    "text": "getΔUT1(date; extrapolate=true, warnings=true)\n\nGet the difference between UTC and UT1 for a certain date in seconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getΔUT1(date; outside_range=:warn)\n\nGet the difference between UTC and UT1 for a certain date in seconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -189,7 +189,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.getΔUT1_err",
     "category": "method",
-    "text": "getΔUT1_err(date; extrapolate=true, warnings=true)\n\nGet the error in the difference between UTC and UT1 for a certain date in seconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "getΔUT1_err(date; outside_range=:warn)\n\nGet the error in the difference between UTC and UT1 for a certain date in seconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -197,7 +197,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.polarmotion",
     "category": "method",
-    "text": "polarmotion(date; extrapolate=true, warnings=true)\n\nGet the coordinates of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "polarmotion(date; outside_range=:warn)\n\nGet the coordinates of Earth\'s north pole w.r.t. the CIO for a certain date in arcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -205,7 +205,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.precession_nutation00",
     "category": "method",
-    "text": "precession_nutation00(date; extrapolate=true, warnings=true)\n\nGet the celestial pole coordinate corrections for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "precession_nutation00(date; outside_range=:warn)\n\nGet the celestial pole coordinate corrections for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
@@ -213,7 +213,7 @@ var documenterSearchIndex = {"docs": [
     "page": "API",
     "title": "EarthOrientation.precession_nutation80",
     "category": "method",
-    "text": "precession_nutation80(date; extrapolate=true, warnings=true)\n\nGet the ecliptic corrections for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. If extrapolate is false an exception will be thrown if date is beyond the range of the table contained in eop. If warnings is true the user will be warned if the result is extrapolated.\n\n\n\n\n\n"
+    "text": "precession_nutation80(date; outside_range=:warn)\n\nGet the ecliptic corrections for a certain date in milliarcseconds.\n\ndate can either be a DateTime object or a Julian date represented by a Float64. The outside_range argument determines what to do if not data is available for date:\n\n:warn: The last valid value is returned and a warning will be displayed.\n:nothing: The last valid value is returned.\n:error: An OutOfRangeException is thrown.\n\n\n\n\n\n"
 },
 
 {
