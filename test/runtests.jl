@@ -1,7 +1,8 @@
 using Test
 using EarthOrientation
 
-using Dates: DateTime, Year, datetime2julian, now
+using Dates: DateTime, Year, Hour, Second,
+    datetime2julian, now
 
 import EarthOrientation.OutOfRangeError
 
@@ -9,6 +10,35 @@ const FINALS = joinpath(@__DIR__, "finals.csv")
 const FINALS_2000A = joinpath(@__DIR__, "finals2000A.csv")
 
 push!(EOP_DATA, FINALS, FINALS_2000A)
+
+"""
+This is the langrangian interpolation routine from
+ftp://hpiers.obspm.fr/iers/models/interp.f
+"""
+function lagint(x, y, xint)
+    n = length(x)
+    @assert n == length(y)
+    yout = 0.0
+    k = searchsortedlast(x, xint)
+    if k < 2
+        k = 2
+    end
+    if k > n - 2
+        k = n - 2
+    end
+
+    for m in k-1:k+2
+        term = y[m]
+        for j in k-1:k+2
+            if m != j
+                term = term * (xint - x[j])/(x[m] - x[j])
+            end
+        end
+        yout += term
+    end
+
+    yout
+end
 
 @testset "EarthOrientation" begin
     include("akima.jl")
@@ -62,5 +92,31 @@ push!(EOP_DATA, FINALS, FINALS_2000A)
         @test_throws OutOfRangeError getdx(eop, now() + Year(1), extrapolate=false)
         dt = DateTime(1973, 1, 1)
         @test_throws OutOfRangeError getdx(eop, dt, extrapolate=false)
+    end
+    @testset "Interpolation" begin
+        eop = get(EOP_DATA)
+        interp = eop.UT1_TAI
+        x = interp.x
+        y = interp.y
+        max_error = -Inf
+        min_error = Inf
+        @testset for d in DateTime(1973, 2, 1):Hour(1):DateTime(2000, 1, 1)
+            mjd = datetime2julian(d) - EarthOrientation.MJD_EPOCH
+            exp = lagint(x, y, mjd)
+            act = interpolate(interp, mjd)
+            @test exp ≈ act rtol=1e-6
+        end
+    end
+    @testset "Leap Seconds" begin
+        before = DateTime(2016, 12, 31, 23, 59, 59)
+        during = before + Second(1)
+        after = before + Second(2)
+
+        # Reference values from AstroPy
+        # We do not care about precision here and just want to verify whether
+        # the leap second is applied correctly
+        @test getΔUT1(before) ≈ -0.40873227809284624 rtol=1e-4
+        @test getΔUT1(during) ≈ -0.40873228904642317 rtol=1e-4
+        @test getΔUT1(after) ≈ 0.5912677 rtol=1e-4
     end
 end
