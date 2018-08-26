@@ -9,7 +9,7 @@
 The package can be installed through Julia's package manager:
 
 ```julia
-Pkg.add("EarthOrientation")
+pkg> add EarthOrientation
 ```
 
 ## Quickstart
