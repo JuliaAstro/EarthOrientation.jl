@@ -1,6 +1,6 @@
 struct Akima
     n::Int
-    x::Vector{Float64}
+    x::Vector{Int}
     y::Vector{Float64}
     b::Vector{Float64}
     c::Vector{Float64}
@@ -39,7 +39,7 @@ function Akima(x, y)
 end
 
 function interpolate(a::Akima, xi)
-    idx = searchsortedlast(a.x, xi)
+    idx = searchsortedlast(a.x, floor(Int, xi))
     idx == 0 && return a.y[1]
     idx == a.n && return a.y[end]
 

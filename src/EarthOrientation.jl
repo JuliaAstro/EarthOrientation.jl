@@ -75,6 +75,10 @@ mutable struct EOParams
     mjd::Vector{Float64}
     "Contains the last available data point for every table."
     lastdate::Dict{Symbol, Float64}
+    "Difference between UT1 and TAI."
+    UT1_TAI::Akima
+    "Set of leap second dates"
+    leaps::Set{Float64}
     "North pole x-coordinate."
     xp::Akima
     "Error in North pole x-coordinate."
@@ -107,8 +111,6 @@ mutable struct EOParams
     dy::Akima
     "Error in celestial pole y-coordinate correction."
     dy_err::Akima
-    "Difference between UT1 and TAI."
-    UT1_TAI::Akima
 
     EOParams(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
 end
@@ -147,7 +149,7 @@ function EOParams(iau1980file::String, iau2000file::String)
     date = getdate(data80)
     mjd = Vector{Float64}(data80[:,1])
     eop = EOParams(date, mjd)
-    for field in fieldnames(EOParams)[4:end-1]
+    for field in fieldnames(EOParams)[6:end]
         col = columns[field]
         data = col < 20 ? data80 : data00
         row = findfirst(isempty.(data[:,col])) - 1
@@ -162,6 +164,7 @@ function EOParams(iau1980file::String, iau2000file::String)
         Δut1_tai[i] = Δut1_utc - Δat
     end
     eop.UT1_TAI = Akima(copy(eop.ΔUT1.x), Δut1_tai)
+    eop.leaps = Set(LeapSeconds.LS_EPOCHS)
     return eop
 end
 
@@ -187,7 +190,7 @@ function interpolate(eop::EOParams, field::Symbol, jd::Float64; outside_range=:w
 
     if field == :ΔUT1
         Δat = offset_tai_utc(jd)
-        if jd in LeapSeconds.LS_EPOCHS
+        if mjd in eop.leaps
             Δat -= 1.0
         end
         return interpolate(eop.UT1_TAI, mjd) + Δat
@@ -210,10 +213,10 @@ end
 Get the x-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getxp(eop, date; args...) = interpolate(eop, :xp, date; args...)
 getxp(date; args...) = getxp(get(EOP_DATA), date; args...)
@@ -225,10 +228,10 @@ Get the error for the x-coordinate of Earth's north pole w.r.t. the CIO
 for a certain `date` in arcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getxp_err(eop, date; args...) = interpolate(eop, :xp_err, date; args...)
 getxp_err(date; args...) = getxp_err(get(EOP_DATA), date; args...)
@@ -239,10 +242,10 @@ getxp_err(date; args...) = getxp_err(get(EOP_DATA), date; args...)
 Get the y-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getyp(eop, date; args...) = interpolate(eop, :yp, date; args...)
 getyp(date; args...) = getyp(get(EOP_DATA), date; args...)
@@ -254,10 +257,10 @@ Get the error for the y-coordinate of Earth's north pole w.r.t. the CIO
 for a certain `date` in arcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getyp_err(eop, date; args...) = interpolate(eop, :yp_err, date; args...)
 getyp_err(date; args...) = getyp_err(get(EOP_DATA), date; args...)
@@ -268,10 +271,10 @@ getyp_err(date; args...) = getyp_err(get(EOP_DATA), date; args...)
 Get the coordinates of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 polarmotion(eop, date; args...) = (getxp(eop, date; args...),
     getyp(eop, date; outside_range=:warn, args...))
@@ -288,10 +291,10 @@ polarmotion(date; args...) = (getxp(date; args...),
 Get the difference between UTC and UT1 for a certain `date` in seconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getΔUT1(eop, date; args...) = interpolate(eop, :ΔUT1, date; args...)
 getΔUT1(date; args...) = getΔUT1(get(EOP_DATA), date; args...)
@@ -302,10 +305,10 @@ getΔUT1(date; args...) = getΔUT1(get(EOP_DATA), date; args...)
 Get the error in the difference between UTC and UT1 for a certain `date` in seconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getΔUT1_err(eop, date; args...) = interpolate(eop, :ΔUT1_err, date; args...)
 getΔUT1_err(date; args...) = getΔUT1_err(get(EOP_DATA), date; args...)
@@ -316,10 +319,10 @@ getΔUT1_err(date; args...) = getΔUT1_err(get(EOP_DATA), date; args...)
 Get the excess length of day for a certain `date` in milliseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getlod(eop, date; args...) = interpolate(eop, :lod, date; args...)
 getlod(date; args...) = getlod(get(EOP_DATA), date; args...)
@@ -330,10 +333,10 @@ getlod(date; args...) = getlod(get(EOP_DATA), date; args...)
 Get the error in the excess length of day for a certain `date` in milliseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getlod_err(eop, date; args...) = interpolate(eop, :lod_err, date; args...)
 getlod_err(date; args...) = getlod_err(get(EOP_DATA), date; args...)
@@ -348,10 +351,10 @@ getlod_err(date; args...) = getlod_err(get(EOP_DATA), date; args...)
 Get the ecliptic nutation correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdψ(eop, date; args...) = interpolate(eop, :dψ, date; args...)
 getdψ(date; args...) = getdψ(get(EOP_DATA), date; args...)
@@ -362,10 +365,10 @@ getdψ(date; args...) = getdψ(get(EOP_DATA), date; args...)
 Get the error in the ecliptic nutation correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdψ_err(eop, date; args...) = interpolate(eop, :dψ_err, date; args...)
 getdψ_err(date; args...) = getdψ_err(get(EOP_DATA), date; args...)
@@ -376,10 +379,10 @@ getdψ_err(date; args...) = getdψ_err(get(EOP_DATA), date; args...)
 Get the ecliptic obliquity correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdϵ(eop, date; args...) = interpolate(eop, :dϵ, date; args...)
 getdϵ(date; args...) = getdϵ(get(EOP_DATA), date; args...)
@@ -390,10 +393,10 @@ getdϵ(date; args...) = getdϵ(get(EOP_DATA), date; args...)
 Get the error in the ecliptic obliquity correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdϵ_err(eop, date; args...) = interpolate(eop, :dϵ_err, date; args...)
 getdϵ_err(date; args...) = getdϵ_err(get(EOP_DATA), date; args...)
@@ -404,10 +407,10 @@ getdϵ_err(date; args...) = getdϵ_err(get(EOP_DATA), date; args...)
 Get the ecliptic corrections for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 precession_nutation80(eop, date; args...) = (getdψ(eop, date; args...),
     getdϵ(eop, date; outside_range=:warn, args...))
@@ -424,10 +427,10 @@ precession_nutation80(date; args...) = (getdψ(date; args...),
 Get the celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdx(eop, date; args...) = interpolate(eop, :dx, date; args...)
 getdx(date; args...) = getdx(get(EOP_DATA), date; args...)
@@ -438,10 +441,10 @@ getdx(date; args...) = getdx(get(EOP_DATA), date; args...)
 Get the error in celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdx_err(eop, date; args...) = interpolate(eop, :dx_err, date; args...)
 getdx_err(date; args...) = getdx_err(get(EOP_DATA), date; args...)
@@ -452,10 +455,10 @@ getdx_err(date; args...) = getdx_err(get(EOP_DATA), date; args...)
 Get the celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdy(eop, date; args...) = interpolate(eop, :dy, date; args...)
 getdy(date; args...) = getdy(get(EOP_DATA), date; args...)
@@ -466,10 +469,10 @@ getdy(date; args...) = getdy(get(EOP_DATA), date; args...)
 Get the error in celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 getdy_err(eop, date; args...) = interpolate(eop, :dy_err, date; args...)
 getdy_err(date; args...) = getdy_err(get(EOP_DATA), date; args...)
@@ -480,10 +483,10 @@ getdy_err(date; args...) = getdy_err(get(EOP_DATA), date; args...)
 Get the celestial pole coordinate corrections for a certain `date` in milliarcseconds.
 
 `date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
-The `outside_range` argument determines what to do if not data is available for `date`:
+The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
-- `:error`: An `OutOfRangeException` is thrown.
+- `:error`: An `OutOfRangeError` is thrown.
 """
 precession_nutation00(eop, date; args...) = (getdx(eop, date; args...), getdy(eop, date; outside_range=:warn, args...))
 precession_nutation00(date; args...) = (getdx(date; args...), getdy(date; outside_range=:warn, args...))
