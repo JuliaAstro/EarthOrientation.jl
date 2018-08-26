@@ -40,6 +40,7 @@ end
 
 function interpolate(a::Akima, xi)
     idx = searchsortedlast(a.x, xi)
+    idx == 0 && return a.y[1]
     idx == a.n && return a.y[end]
 
     wj = xi - a.x[idx]
