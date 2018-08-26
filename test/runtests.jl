@@ -86,12 +86,13 @@ end
         @test getdy_err(dt) ≈ 0.298
         @test all(precession_nutation00(eop, dt) .≈ (-0.135, -0.204))
         @test all(precession_nutation00(dt) .≈ (-0.135, -0.204))
-        dt = DateTime(2017, 1, 1, 12)
         # Reference value from Orekit which uses Hermite interpolation
-        @test getΔUT1(eop, dt) ≈ 0.5907459506337509 rtol=1e-4
-        @test_throws OutOfRangeError getdx(eop, now() + Year(1), extrapolate=false)
-        dt = DateTime(1973, 1, 1)
-        @test_throws OutOfRangeError getdx(eop, dt, extrapolate=false)
+        @test getΔUT1(eop, DateTime(2017, 1, 1, 12)) ≈ 0.5907459506337509 rtol=1e-4
+        dt = DateTime(2100, 1, 1)
+        @test_nowarn getdx(eop, dt, outside_range=:nothing)
+        @test_logs (:warn, "No data available after 2017-10-09. The last valid value will be returned.") getdx(eop, dt, outside_range=:warn)
+        @test_throws OutOfRangeError getdx(eop, dt, outside_range=:error)
+        @test_throws OutOfRangeError getdx(eop, DateTime(1973, 1, 1), outside_range=:error)
     end
     @testset "Interpolation" begin
         eop = get(EOP_DATA)
