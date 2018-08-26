@@ -2,6 +2,7 @@ module EarthOrientation
 
 using Dates: datetime2julian, julian2datetime, Date, DateTime, today, days
 using DelimitedFiles
+using LeapSeconds
 using OptionalData
 using RemoteFiles
 
@@ -106,6 +107,7 @@ mutable struct EOParams
     dy::Akima
     "Error in celestial pole y-coordinate correction."
     dy_err::Akima
+    UT1_TAI::Akima
 
     EOParams(date, mjd) = new(date, mjd, Dict{Symbol,Float64}())
 end
@@ -144,7 +146,7 @@ function EOParams(iau1980file::String, iau2000file::String)
     date = getdate(data80)
     mjd = Vector{Float64}(data80[:,1])
     eop = EOParams(date, mjd)
-    for field in fieldnames(EOParams)[4:end]
+    for field in fieldnames(EOParams)[4:end-1]
         col = columns[field]
         data = col < 20 ? data80 : data00
         row = findfirst(isempty.(data[:,col])) - 1
@@ -152,6 +154,13 @@ function EOParams(iau1980file::String, iau2000file::String)
         setfield!(eop, field,
                   Akima(mjd[1:row], Vector{Float64}(data[1:row,col])))
     end
+    Δut1_tai = similar(eop.ΔUT1.y)
+    for (i, (mjd, Δut1_utc)) in enumerate(zip(eop.ΔUT1.x, eop.ΔUT1.y))
+        jd = mjd + MJD_EPOCH
+        Δat = offset_tai_utc(jd)
+        Δut1_tai[i] = Δut1_utc - Δat
+    end
+    eop.UT1_TAI = Akima(copy(eop.ΔUT1.x), Δut1_tai)
     return eop
 end
 
@@ -169,6 +178,14 @@ function interpolate(eop::EOParams, field::Symbol, jd::Float64; extrapolate=true
         elseif warnings
             warn_extrapolation(lim, when)
         end
+    end
+
+    if field == :ΔUT1
+        Δat = offset_tai_utc(jd)
+        if jd in LeapSeconds.LS_EPOCHS
+            Δat -= 1.0
+        end
+        return interpolate(eop.UT1_TAI, mjd) + Δat
     end
 
     interpolate(getfield(eop, field), mjd)
