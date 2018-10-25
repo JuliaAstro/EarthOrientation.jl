@@ -25,12 +25,12 @@ end
 
 @RemoteFileSet data "IERS Data" begin
     iau1980 = @RemoteFile(
-        "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
+        "https://datacenter.iers.org/data/csv/finals.all.csv",
         file="finals.csv",
         updates=:thursdays,
     )
     iau2000 = @RemoteFile(
-        "https://datacenter.iers.org/eop/-/somos/6Rgv/latestXL/9/finals2000A.all/csv",
+        "https://datacenter.iers.org/data/csv/finals2000A.all.csv",
         file="finals2000A.csv",
         updates=:thursdays,
     )
