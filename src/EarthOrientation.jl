@@ -14,8 +14,12 @@ export getΔUT1, getΔUT1_err, getlod, getlod_err
 
 function __init__()
     if isfile(data)
-        eop = EOParams(paths(data, :iau1980, :iau2000)...)
-        push!(EOP_DATA, eop)
+        try
+            eop = EOParams(paths(data, :iau1980, :iau2000)...)
+            push!(EOP_DATA, eop)
+        catch e
+            @warn "The downloaded files seem to be corrupted. To download them again execute `EarthOrientation.update(force = true)`."
+        end
     end
 end
 
