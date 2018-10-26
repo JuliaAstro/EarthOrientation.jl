@@ -14,19 +14,23 @@ export getΔUT1, getΔUT1_err, getlod, getlod_err
 
 function __init__()
     if isfile(data)
-        eop = EOParams(paths(data, :iau1980, :iau2000)...)
-        push!(EOP_DATA, eop)
+        try
+            eop = EOParams(paths(data, :iau1980, :iau2000)...)
+            push!(EOP_DATA, eop)
+        catch e
+            @warn "The downloaded files seem to be corrupted. To download them again execute `EarthOrientation.update(force = true)`."
+        end
     end
 end
 
 @RemoteFileSet data "IERS Data" begin
     iau1980 = @RemoteFile(
-        "https://datacenter.iers.org/eop/-/somos/5Rgv/latestXL/7/finals.all/csv",
+        "https://datacenter.iers.org/data/csv/finals.all.csv",
         file="finals.csv",
         updates=:thursdays,
     )
     iau2000 = @RemoteFile(
-        "https://datacenter.iers.org/eop/-/somos/6Rgv/latestXL/9/finals2000A.all/csv",
+        "https://datacenter.iers.org/data/csv/finals2000A.all.csv",
         file="finals2000A.csv",
         updates=:thursdays,
     )
@@ -47,13 +51,14 @@ warn_range(mjd, when) = @warn("No data available $when " *
     "$(date_from_mjd(mjd)). The last valid value will be returned.")
 
 """
-    update()
+    update(; force=false)
 
 Download weekly EOP data from the IERS servers if newer files are available or
-no data has been downloaded previously.
+no data has been downloaded previously. If the keyword `force` is `true`, then
+all the files will be downloaded again.
 """
-function update()
-    download(data)
+function update(; force=false)
+    download(data; force=force)
     push!(EOP_DATA, paths(data, :iau1980, :iau2000)...)
     nothing
 end
