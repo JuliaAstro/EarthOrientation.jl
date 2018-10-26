@@ -51,14 +51,14 @@ warn_range(mjd, when) = @warn("No data available $when " *
     "$(date_from_mjd(mjd)). The last valid value will be returned.")
 
 """
-    update(;force = false)
+    update(; force=false)
 
 Download weekly EOP data from the IERS servers if newer files are available or
 no data has been downloaded previously. If the keyword `force` is `true`, then
 all the files will be downloaded again.
 """
-function update(;force = false)
-    download(data; force = force)
+function update(; force=false)
+    download(data; force=force)
     push!(EOP_DATA, paths(data, :iau1980, :iau2000)...)
     nothing
 end
