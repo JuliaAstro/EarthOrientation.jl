@@ -175,7 +175,7 @@ end
 
 Base.show(io::IO, eop::EOParams) = print(io, "EOParams($(eop.date))")
 
-@inline function interpolate(eop::EOParams, field::Symbol, jd::Float64; outside_range=:warn)
+@inline function interpolate(eop::EOParams, field::Symbol, jd; outside_range=:warn)
     mjd = jd - MJD_EPOCH
     before = mjd < eop.mjd[1]
     after = mjd > eop.lastdate[field]
@@ -218,7 +218,7 @@ end
 
 Get the x-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -233,7 +233,7 @@ getxp(date; args...) = getxp(get(EOP_DATA), date; args...)
 Get the error for the x-coordinate of Earth's north pole w.r.t. the CIO
 for a certain `date` in arcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -247,7 +247,7 @@ getxp_err(date; args...) = getxp_err(get(EOP_DATA), date; args...)
 
 Get the y-coordinate of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -262,7 +262,7 @@ getyp(date; args...) = getyp(get(EOP_DATA), date; args...)
 Get the error for the y-coordinate of Earth's north pole w.r.t. the CIO
 for a certain `date` in arcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -276,7 +276,7 @@ getyp_err(date; args...) = getyp_err(get(EOP_DATA), date; args...)
 
 Get the coordinates of Earth's north pole w.r.t. the CIO for a certain `date` in arcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -296,7 +296,7 @@ polarmotion(date; args...) = (getxp(date; args...),
 
 Get the difference between UTC and UT1 for a certain `date` in seconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -310,7 +310,7 @@ getΔUT1(date; args...) = getΔUT1(get(EOP_DATA), date; args...)
 
 Get the error in the difference between UTC and UT1 for a certain `date` in seconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -324,7 +324,7 @@ getΔUT1_err(date; args...) = getΔUT1_err(get(EOP_DATA), date; args...)
 
 Get the excess length of day for a certain `date` in milliseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -338,7 +338,7 @@ getlod(date; args...) = getlod(get(EOP_DATA), date; args...)
 
 Get the error in the excess length of day for a certain `date` in milliseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -356,7 +356,7 @@ getlod_err(date; args...) = getlod_err(get(EOP_DATA), date; args...)
 
 Get the ecliptic nutation correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -370,7 +370,7 @@ getdψ(date; args...) = getdψ(get(EOP_DATA), date; args...)
 
 Get the error in the ecliptic nutation correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -384,7 +384,7 @@ getdψ_err(date; args...) = getdψ_err(get(EOP_DATA), date; args...)
 
 Get the ecliptic obliquity correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -398,7 +398,7 @@ getdϵ(date; args...) = getdϵ(get(EOP_DATA), date; args...)
 
 Get the error in the ecliptic obliquity correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -412,7 +412,7 @@ getdϵ_err(date; args...) = getdϵ_err(get(EOP_DATA), date; args...)
 
 Get the ecliptic corrections for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -432,7 +432,7 @@ precession_nutation80(date; args...) = (getdψ(date; args...),
 
 Get the celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -446,7 +446,7 @@ getdx(date; args...) = getdx(get(EOP_DATA), date; args...)
 
 Get the error in celestial pole x-coordinate correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -460,7 +460,7 @@ getdx_err(date; args...) = getdx_err(get(EOP_DATA), date; args...)
 
 Get the celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -474,7 +474,7 @@ getdy(date; args...) = getdy(get(EOP_DATA), date; args...)
 
 Get the error in celestial pole y-coordinate correction for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
@@ -488,7 +488,7 @@ getdy_err(date; args...) = getdy_err(get(EOP_DATA), date; args...)
 
 Get the celestial pole coordinate corrections for a certain `date` in milliarcseconds.
 
-`date` can either be a `DateTime` object or a Julian date represented by a `Float64`.
+`date` can either be a `DateTime` object or a Julian date represented by a number.
 The `outside_range` argument determines what to do if no data is available for `date`:
 - `:warn`: The last valid value is returned and a warning will be displayed.
 - `:nothing`: The last valid value is returned.
