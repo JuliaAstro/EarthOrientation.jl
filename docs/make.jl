@@ -1,9 +1,11 @@
-using Documenter, EarthOrientation
+using Documenter
+using EarthOrientation
 
 makedocs(
-    format = :html,
+    modules = [EarthOrientation],
+    authors = "Helge Eichhorn <git@helgeeichhorn.de>",
     sitename = "EarthOrientation.jl",
-    authors = "Helge Eichhorn",
+    format = Documenter.HTML(),
     pages = [
         "Home" => "index.md",
         "API" => "api.md",
@@ -11,9 +13,6 @@ makedocs(
 )
 
 deploydocs(
-    julia = "nightly",
     repo = "github.com/JuliaAstro/EarthOrientation.jl.git",
-    target = "build",
-    deps = nothing,
-    make = nothing,
+    push_preview = true,
 )
