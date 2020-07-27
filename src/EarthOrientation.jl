@@ -10,7 +10,7 @@ export EOParams, EOP_DATA, interpolate
 export polarmotion, getxp, getxp_err, getyp, getyp_err
 export precession_nutation80, getdψ, getdψ_err, getdϵ, getdϵ_err
 export precession_nutation00, getdx, getdx_err, getdy, getdy_err
-export getΔUT1, getΔUT1_err, getlod, getlod_err
+export getΔUT1, getΔUT1_TAI, getΔUT1_err, getlod, getlod_err
 
 function __init__()
     if isfile(data)
@@ -158,7 +158,7 @@ function EOParams(iau1980file::String, iau2000file::String)
         col = columns[field]
         data = col < 20 ? data80 : data00
         row = findfirst(isempty.(data[:,col])) - 1
-        merge!(eop.lastdate, Dict(field => mjd[row]))
+        push!(eop.lastdate, field => mjd[row])
         setfield!(eop, field,
                   Akima(mjd[1:row], Vector{Float64}(data[1:row,col])))
     end
@@ -168,6 +168,7 @@ function EOParams(iau1980file::String, iau2000file::String)
         Δat = offset_tai_utc(jd)
         Δut1_tai[i] = Δut1_utc - Δat
     end
+    push!(eop.lastdate, :UT1_TAI => eop.lastdate[:ΔUT1])
     eop.UT1_TAI = Akima(copy(eop.ΔUT1.x), Δut1_tai)
     eop.leaps = Set(LeapSeconds.LS_EPOCHS)
     return eop
@@ -304,6 +305,20 @@ The `outside_range` argument determines what to do if no data is available for `
 """
 getΔUT1(eop, date; args...) = interpolate(eop, :ΔUT1, date; args...)
 getΔUT1(date; args...) = getΔUT1(get(EOP_DATA), date; args...)
+
+"""
+    getΔUT1_TAI(date; outside_range=:warn)
+
+Get the difference between TAI and UT1 for a certain `date` in seconds.
+
+`date` can either be a `DateTime` object or a Julian date represented by a number.
+The `outside_range` argument determines what to do if no data is available for `date`:
+- `:warn`: The last valid value is returned and a warning will be displayed.
+- `:nothing`: The last valid value is returned.
+- `:error`: An `OutOfRangeError` is thrown.
+"""
+getΔUT1_TAI(eop, date; args...) = interpolate(eop, :UT1_TAI, date; args...)
+getΔUT1_TAI(date; args...) = getΔUT1_TAI(get(EOP_DATA), date; args...)
 
 """
     getΔUT1_err(date; outside_range=:warn)

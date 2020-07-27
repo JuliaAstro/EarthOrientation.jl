@@ -60,6 +60,8 @@ end
         @test all(polarmotion(dt) .≈ (0.043301, 0.377879))
         @test getΔUT1(eop, dt) ≈ 0.3554784
         @test getΔUT1(dt) ≈ 0.3554784
+        @test getΔUT1_TAI(eop, dt) ≈ -31.6445216
+        @test getΔUT1_TAI(dt) ≈ -31.6445216
         @test getΔUT1_err(eop, dt) ≈ 0.0000099
         @test getΔUT1_err(dt) ≈ 0.0000099
         @test getlod(eop, dt) ≈ 0.9333
@@ -88,6 +90,7 @@ end
         @test all(precession_nutation00(dt) .≈ (-0.135, -0.204))
         # Reference value from Orekit which uses Hermite interpolation
         @test getΔUT1(eop, DateTime(2017, 1, 1, 12)) ≈ 0.5907459506337509 rtol=1e-4
+        @test getΔUT1_TAI(eop, DateTime(2017, 1, 1, 12)) ≈ -36.4092551643925 rtol=1e-4
         dt = DateTime(2100, 1, 1)
         @test_nowarn getdx(eop, dt, outside_range=:nothing)
         @test_logs (:warn, "No data available after 2017-10-09. The last valid value will be returned.") getdx(eop, dt, outside_range=:warn)
