@@ -6,6 +6,7 @@
 [![Coverage](https://codecov.io/gh/JuliaAstro/EarthOrientation.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaAstro/EarthOrientation.jl)
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaAstro.github.io/EarthOrientation.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaAstro.github.io/EarthOrientation.jl/dev)
+[![DOI](https://zenodo.org/badge/72871735.svg)](https://zenodo.org/badge/latestdoi/72871735)
 
 ## Installation
 
