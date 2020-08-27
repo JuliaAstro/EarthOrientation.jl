@@ -40,6 +40,7 @@ Or the current difference between UT1 and UTC and the associated prediction erro
     * both: `polarmotion`
 * Earth rotation
     * Difference between UT1 and UTC: `getΔUT1`
+    * Difference between UT1 and TAI: `getΔUT1_TAI`
     * Excess length of day: `getlod`
 * Precession and nutation based on the 1980 IAU conventions
     * Correction to the nutation of the ecliptic: `getdψ`
