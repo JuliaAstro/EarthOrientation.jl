@@ -1,15 +1,13 @@
 using Documenter
 using EarthOrientation
 
+include("pages.jl")
 makedocs(
     modules = [EarthOrientation],
     authors = "Helge Eichhorn <git@helgeeichhorn.de>",
     sitename = "EarthOrientation.jl",
     format = Documenter.HTML(),
-    pages = [
-        "Home" => "index.md",
-        "API" => "api.md",
-    ],
+    pages = pages
 )
 
 deploydocs(
