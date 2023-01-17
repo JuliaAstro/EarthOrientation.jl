@@ -12,7 +12,7 @@ RemoteFiles = "cbe49d4c-5af1-5b60-bb70-0a60aa018e1b"
 [compat]
 LeapSeconds = "1"
 OptionalData = "0.3, 1.0"
-RemoteFiles = "0.3, 0.4"
+RemoteFiles = "0.3, 0.4, 0.5"
 julia = "1"
 
 [extras]
