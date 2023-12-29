@@ -127,18 +127,18 @@ const columns = Dict(
     :xp_err => 7,
     :yp => 8,
     :yp_err => 9,
-    :ΔUT1 => 11,
-    :ΔUT1_err => 12,
-    :lod => 13,
-    :lod_err => 14,
-    :dψ => 16,
-    :dψ_err => 17,
-    :dϵ => 18,
-    :dϵ_err => 19,
-    :dx => 20,
-    :dx_err => 21,
-    :dy => 22,
-    :dy_err => 23,
+    :ΔUT1 => 15,
+    :ΔUT1_err => 16,
+    :lod => 17,
+    :lod_err => 18,
+    :dψ => 20,
+    :dψ_err => 21,
+    :dϵ => 22,
+    :dϵ_err => 23,
+    :dx => 24,
+    :dx_err => 25,
+    :dy => 26,
+    :dy_err => 27,
 )
 
 """
@@ -156,7 +156,7 @@ function EOParams(iau1980file::String, iau2000file::String)
     eop = EOParams(date, mjd)
     for field in fieldnames(EOParams)[6:end]
         col = columns[field]
-        data = col < 20 ? data80 : data00
+        data = col < 24 ? data80 : data00
         row = findfirst(isempty.(data[:,col])) - 1
         push!(eop.lastdate, field => mjd[row])
         setfield!(eop, field,
