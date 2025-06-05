@@ -2,7 +2,7 @@
 
 *Calculate Earth orientation parameters from IERS tables in Julia.*
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaAstro.github.io/EarthOrientation.jl/stable)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaAstro.github.io/EarthOrientation/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaAstro.github.io/EarthOrientation.jl/dev)
 
 [![CI](https://github.com/JuliaAstro/EarthOrientation.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaAstro/EarthOrientation.jl/actions/workflows/CI.yml)
