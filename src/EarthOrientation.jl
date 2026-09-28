@@ -1,10 +1,10 @@
 module EarthOrientation
 
-using Dates: datetime2julian, julian2datetime, Date, DateTime, today, days
-using DelimitedFiles
-using LeapSeconds
-using OptionalData
-using RemoteFiles
+using Dates: datetime2julian, julian2datetime, Date, DateTime
+using DelimitedFiles: readdlm
+using LeapSeconds: LeapSeconds, offset_tai_utc
+using OptionalData: @OptionalData
+using RemoteFiles: @RemoteFile, @RemoteFileSet, paths
 
 export EOParams, EOP_DATA, interpolate
 export polarmotion, getxp, getxp_err, getyp, getyp_err
