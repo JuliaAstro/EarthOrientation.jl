@@ -2,11 +2,12 @@
 
 *Calculate Earth orientation parameters from IERS tables in Julia.*
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaAstro.github.io/EarthOrientation/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaAstro.github.io/EarthOrientation.jl/dev)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://juliaastro.org/EarthOrientation/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://juliaastro.org/EarthOrientation.jl/dev)
 
-[![CI](https://github.com/JuliaAstro/EarthOrientation.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaAstro/EarthOrientation.jl/actions/workflows/CI.yml)
-[![Coverage](https://codecov.io/gh/JuliaAstro/EarthOrientation.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaAstro/EarthOrientation.jl)
+[![Test](https://github.com/JuliaAstro/EarthOrientation.jl/actions/workflows/Test.yml/badge.svg)](https://github.com/JuliaAstro/EarthOrientation.jl/actions/workflows/Test.yml)
+[![Coverage](https://codecov.io/gh/JuliaAstro/EarthOrientation.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaAstro/EarthOrientation.jl)
+[![Aqua QA](https://juliatesting.github.io/Aqua.jl/dev/assets/badge.svg)](https://github.com/JuliaTesting/Aqua.jl)
 [![DOI](https://zenodo.org/badge/72871735.svg)](https://zenodo.org/badge/latestdoi/72871735)
 
 ## Installation

@@ -1,15 +1,20 @@
 using Documenter
 using EarthOrientation
+using Documenter.Remotes: GitHub
 
-include("pages.jl")
 makedocs(;
     modules = [EarthOrientation],
     authors = "Helge Eichhorn <git@helgeeichhorn.de>",
+    repo = GitHub("JuliaAstro/EarthOrientation.jl"),
     sitename = "EarthOrientation.jl",
     format = Documenter.HTML(
         canonical = "https://juliaastro.org/EarthOrientation/stable/",
     ),
-    pages = pages,
+    pages = [
+        "Home" => "index.md",
+        "API" => "api.md",
+    ],
+    doctest = false,
 )
 
 deploydocs(;

@@ -1,5 +1,6 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+EarthOrientation = "732a3c5d-d6c0-58bc-adb1-1b51709a25e2"
 
 [compat]
-Documenter = "0.24, 0.25, 0.26, 0.27, 1"
+Documenter = "1"

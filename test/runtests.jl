@@ -40,6 +40,17 @@ function lagint(x, y, xint)
     yout
 end
 
+@testset "Aqua" begin
+    using Aqua
+    Aqua.test_all(EarthOrientation)
+end
+
+@testset "doctests" begin
+    using Documenter
+    DocMeta.setdocmeta!(EarthOrientation, :DocTestSetup, :(using EarthOrientation); recursive = true)
+    doctest(EarthOrientation)
+end
+
 @testset "EarthOrientation" begin
     include("akima.jl")
 
